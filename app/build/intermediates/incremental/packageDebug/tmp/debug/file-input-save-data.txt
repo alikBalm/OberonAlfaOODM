@@ -1,0 +1,7 @@
+#Internal package file, do not edit.
+#Thu Oct 04 16:31:31 MSK 2018
+0.baseType=DIRECTORY
+0.base=/home/OBERON/alik.balm/AndroidStudioProjects/1/OberonAlfaOODM/app/build/intermediates/transforms/dexMerger/debug/0
+0.path=classes.dex
+0.set=DEX
+count=1

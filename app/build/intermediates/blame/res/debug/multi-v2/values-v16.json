@@ -1,0 +1,38 @@
+{
+    "logs": [
+        {
+            "outputFile": "/home/OBERON/alik.balm/AndroidStudioProjects/1/OberonAlfaOODM/app/build/intermediates/incremental/mergeDebugResources/merged.dir/values-v16/values-v16.xml",
+            "map": [
+                {
+                    "source": "/home/OBERON/alik.balm/.gradle/caches/transforms-1/files-1.1/appcompat-v7-27.1.1.aar/932bcb1dd70000fb98aea42cc6b5f47d/res/values-v16/values-v16.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endLines": "5",
+                        "endColumns": "12",
+                        "endOffsets": "223"
+                    },
+                    "to": {
+                        "startLines": "3",
+                        "startColumns": "4",
+                        "startOffsets": "121",
+                        "endLines": "6",
+                        "endColumns": "12",
+                        "endOffsets": "289"
+                    }
+                },
+                {
+                    "source": "/home/OBERON/alik.balm/.gradle/caches/transforms-1/files-1.1/support-compat-27.1.1.aar/6a09191d7451ddabc545e55e4d99fd8b/res/values-v16/values-v16.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "65",
+                        "endOffsets": "116"
+                    }
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:title="Folder"
+        android:id="@+id/createFolder" ></item>
+
+    <item
+        android:title="Document"
+        android:id="@+id/createDocument" ></item>
+</menu>

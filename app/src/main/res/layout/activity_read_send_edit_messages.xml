@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/darker_gray"
+    tools:context=".ReadSendEditMessages">
+
+
+
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/viewMessageLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="visible"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <ImageView
+            android:id="@+id/reply"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintBottom_toTopOf="@id/hor_guid_10"
+            app:layout_constraintEnd_toStartOf="@+id/forward"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="@id/viewMessageLayout"
+            app:layout_constraintTop_toTopOf="@id/viewMessageLayout"
+            app:srcCompat="@drawable/reply" />
+
+        <ImageView
+            android:id="@+id/forward"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintBottom_toTopOf="@id/hor_guid_10"
+            app:layout_constraintEnd_toStartOf="@+id/delete"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/reply"
+            app:layout_constraintTop_toTopOf="@id/viewMessageLayout"
+            app:srcCompat="@drawable/forward" />
+
+        <ImageView
+            android:id="@+id/delete"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintBottom_toTopOf="@id/hor_guid_10"
+            app:layout_constraintEnd_toStartOf="@+id/block"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/forward"
+            app:layout_constraintTop_toTopOf="@id/viewMessageLayout"
+            app:srcCompat="@drawable/delete" />
+
+        <ImageView
+            android:id="@+id/block"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintBottom_toTopOf="@id/hor_guid_10"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/delete"
+            app:layout_constraintTop_toTopOf="@id/viewMessageLayout"
+            app:srcCompat="@drawable/block" />
+
+        <android.support.constraint.Guideline
+            android:id="@+id/hor_guid_10"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.1"/>
+
+        <TextView
+            android:id="@+id/from"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="From : "
+            app:layout_constraintStart_toStartOf="@id/viewMessageLayout"
+            app:layout_constraintTop_toBottomOf="@id/hor_guid_10"
+            app:layout_constraintBottom_toTopOf="@id/to"/>
+        <TextView
+            android:id="@+id/to"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="To : "
+            app:layout_constraintStart_toStartOf="@id/viewMessageLayout"
+            app:layout_constraintTop_toBottomOf="@id/from"
+            app:layout_constraintBottom_toTopOf="@id/date"/>
+        <TextView
+            android:id="@+id/date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Date : "
+            app:layout_constraintStart_toStartOf="@id/viewMessageLayout"
+            app:layout_constraintTop_toBottomOf="@id/to"
+            app:layout_constraintBottom_toTopOf="@id/subject"/>
+        <TextView
+            android:id="@+id/subject"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Subject : "
+            app:layout_constraintStart_toStartOf="@id/viewMessageLayout"
+            app:layout_constraintTop_toBottomOf="@id/date"
+            app:layout_constraintBottom_toTopOf="@id/readMessage"/>
+
+
+        <WebView
+            android:id="@+id/readMessage"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="@id/viewMessageLayout"
+            app:layout_constraintEnd_toEndOf="@id/viewMessageLayout"
+            app:layout_constraintStart_toStartOf="@id/viewMessageLayout"
+            app:layout_constraintTop_toBottomOf="@id/subject" >
+
+        </WebView>
+
+
+
+    </android.support.constraint.ConstraintLayout>
+
+
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/sendMessageLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="invisible"
+        android:layout_marginTop="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        >
+
+        <TextView
+            android:id="@+id/from_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="From :"
+            app:layout_constraintBaseline_toBaselineOf="@+id/from_edit_text"
+            app:layout_constraintStart_toStartOf="@id/sendMessageLayout"
+            app:layout_constraintEnd_toStartOf="@id/from_edit_text"
+            app:layout_constraintTop_toTopOf="@id/sendMessageLayout"
+            />
+
+        <EditText
+            android:id="@+id/from_edit_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="@id/sendMessageLayout"
+            app:layout_constraintStart_toEndOf="@id/from_text_view"
+            app:layout_constraintTop_toTopOf="@id/sendMessageLayout"/>
+
+        <TextView
+            android:id="@+id/to_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="To :     "
+            app:layout_constraintBaseline_toBaselineOf="@+id/to_edit_text"
+            app:layout_constraintStart_toStartOf="@id/sendMessageLayout"
+            app:layout_constraintEnd_toStartOf="@id/to_edit_text"
+            app:layout_constraintTop_toBottomOf="@id/from_text_view"
+            />
+
+        <EditText
+            android:id="@+id/to_edit_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="@id/sendMessageLayout"
+            app:layout_constraintStart_toEndOf="@id/to_text_view"
+            app:layout_constraintTop_toBottomOf="@id/from_edit_text"/>
+
+        <TextView
+            android:id="@+id/subject_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Subject :"
+            app:layout_constraintBaseline_toBaselineOf="@+id/subject_edit_text"
+            app:layout_constraintStart_toStartOf="@id/sendMessageLayout"
+            app:layout_constraintEnd_toStartOf="@id/subject_edit_text"
+            app:layout_constraintTop_toBottomOf="@id/to_text_view"
+            />
+
+        <EditText
+            android:id="@+id/subject_edit_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="@id/sendMessageLayout"
+            app:layout_constraintStart_toEndOf="@id/subject_text_view"
+            app:layout_constraintTop_toBottomOf="@id/to_edit_text"/>
+
+        <EditText
+            android:id="@+id/message_edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="Type Your Message Here"
+            app:layout_constraintEnd_toEndOf="@id/sendMessageLayout"
+            app:layout_constraintStart_toStartOf="@id/sendMessageLayout"
+            app:layout_constraintTop_toBottomOf="@id/subject_text_view" />
+
+        <android.support.constraint.Guideline
+            android:id="@+id/hor_guid_90"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.9"/>
+
+        <android.support.constraint.Guideline
+            android:id="@+id/ver_guid_90"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.85"/>
+
+        <ImageView
+            android:id="@+id/send_message_image"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="@id/sendMessageLayout"
+            app:layout_constraintEnd_toEndOf="@id/sendMessageLayout"
+            app:layout_constraintTop_toBottomOf="@id/hor_guid_90"
+            app:layout_constraintStart_toEndOf="@id/ver_guid_90"
+            app:srcCompat="@drawable/send_message" />
+
+
+
+
+
+
+    </android.support.constraint.ConstraintLayout>
+</android.support.constraint.ConstraintLayout>

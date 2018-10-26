@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">Oberon-AlfaOODM</string>
+    <string name="server">Server</string>
+    <string name="e_mail">Username</string>
+    <string name="password">Password</string>
+    <string name="documents_string">Документы</string>
+    <string name="email_string">Почта</string>
+    <string name="wiki_string">Википедия</string>
+    <string name="contacts_string">Люди</string>
+    <string name="in">Входящие</string>
+    <string name="out">Отправленные</string>
+    <string name="edit">Черновики</string>
+    <string name="trash">Корзина</string>
+    <string name="spam">Спам</string>
+    <string name="last_sync">Последняя синхронизация: </string>
+
+    <string-array name="file_type_to_add">
+        <item>Документ</item>
+        <item>Таблица</item>
+        <item>Презентация</item>
+        <item>txt</item>
+    </string-array>
+
+</resources>

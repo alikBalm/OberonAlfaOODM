@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/darker_gray"
+    tools:context=".OOItemListActivity">
+
+
+    <ListView
+        android:id="@+id/list"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/line_90_hor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.9" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/line_80_hor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.8" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/line_70_hor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.7" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/line_55_ver"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.55" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/line_70_ver"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.70"/>
+
+    <android.support.constraint.Guideline
+        android:id="@+id/line_85_ver"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.85" />
+
+    <ImageView
+        android:id="@+id/logoutImage"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:src="@drawable/logout"
+        app:layout_constraintBottom_toTopOf="@id/lastSync"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/line_90_hor"
+        app:layout_constraintStart_toEndOf="@id/line_85_ver"
+         />
+
+    <ImageView
+        android:id="@+id/syncImage"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:src="@drawable/sync2"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@id/lastSync"
+        app:layout_constraintEnd_toStartOf="@id/line_85_ver"
+        app:layout_constraintTop_toBottomOf="@id/line_90_hor"
+        app:layout_constraintStart_toEndOf="@id/line_70_ver"/>
+
+    <ImageView
+        android:id="@+id/sendMessageImage"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:src="@drawable/add"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@id/lastSync"
+        app:layout_constraintEnd_toStartOf="@id/line_70_ver"
+        app:layout_constraintTop_toBottomOf="@id/line_90_hor"
+        app:layout_constraintStart_toEndOf="@id/line_55_ver"/>
+
+    <ImageView
+        android:id="@+id/createFolderImage"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:src="@drawable/add_doc"
+        android:visibility="invisible"
+        android:onClick="showPopUpCreate"
+        app:layout_constraintBottom_toTopOf="@id/lastSync"
+        app:layout_constraintEnd_toStartOf="@id/line_70_ver"
+        app:layout_constraintTop_toBottomOf="@id/line_90_hor"
+        app:layout_constraintStart_toEndOf="@id/line_55_ver"/>
+
+    <TextView
+        android:id="@+id/lastSync"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="8dp"
+        android:layout_marginEnd="8dp"
+        android:text="@string/last_sync"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/lastSyncData"/>
+    <TextView
+        android:id="@+id/lastSyncData"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <Button
+        android:id="@+id/uploadFile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Upload File"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/logoutImage"/>
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/createFileFolderDocs"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimaryDark"
+        app:layout_constraintBottom_toTopOf="@id/line_70_hor"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/textViewForType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            app:layout_constraintTop_toTopOf="@id/createFileFolderDocs"
+            app:layout_constraintStart_toStartOf="@id/createFileFolderDocs"
+            app:layout_constraintEnd_toStartOf="@+id/textViewForCreate"/>
+
+        <TextView
+            android:id="@+id/textViewForCreate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" Creation"
+            app:layout_constraintTop_toTopOf="@id/createFileFolderDocs"
+            app:layout_constraintStart_toEndOf="@+id/textViewForType"/>
+
+        <Spinner
+            android:id="@+id/spinnerForFileType"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/textViewForCreate"
+            app:layout_constraintEnd_toEndOf="@id/createFileFolderDocs"
+            app:layout_constraintStart_toStartOf="@id/createFileFolderDocs"
+            ></Spinner>
+
+        <EditText
+            android:id="@+id/createTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/spinnerForFileType"
+            app:layout_constraintEnd_toEndOf="@id/createFileFolderDocs"
+            app:layout_constraintStart_toStartOf="@id/createFileFolderDocs"
+            android:hint="Title"/>
+
+        <EditText
+            android:id="@+id/createTextForTXT"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toTopOf="@+id/createButton"
+            app:layout_constraintTop_toBottomOf="@+id/createTitle"
+            app:layout_constraintStart_toStartOf="@+id/createFileFolderDocs"
+            app:layout_constraintEnd_toEndOf="@+id/createFileFolderDocs"
+            android:hint="TXT Text"/>
+
+        <Button
+            android:id="@+id/createButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Create"
+            app:layout_constraintStart_toStartOf="@+id/createFileFolderDocs"
+            app:layout_constraintEnd_toEndOf="@+id/createFileFolderDocs"
+            app:layout_constraintTop_toBottomOf="@+id/createTextForTXT"/>
+
+
+    </android.support.constraint.ConstraintLayout>
+
+
+
+
+</android.support.constraint.ConstraintLayout>
