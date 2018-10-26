@@ -673,6 +673,8 @@ drawable trash
 drawable trash_folder
 drawable txt
 drawable unknown
+drawable upload_file
+drawable upload_file_red
 drawable wiki
 drawable xls
 drawable zip
@@ -871,7 +873,7 @@ id top
 id topPanel
 id uniform
 id up
-id uploadFile
+id uploadFileImage
 id useLogo
 id ver_guid_90
 id viewMessageLayout

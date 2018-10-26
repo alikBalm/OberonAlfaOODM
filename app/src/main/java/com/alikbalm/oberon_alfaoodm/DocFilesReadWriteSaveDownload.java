@@ -65,11 +65,14 @@ public class DocFilesReadWriteSaveDownload extends AppCompatActivity {
 
         String webUrl = getIntent().getStringExtra("webUrl");
 
-        Log.i("111 webUrl", webUrl);
+        //Log.i("111 webUrl", webUrl);
 
-        String url = webUrl.contains("https") ? webUrl : "https://" + MainActivity.currentUser.server + webUrl ;
+        String url =
+                webUrl.contains(MainActivity.currentUser.server) ?
+                webUrl :
+                MainActivity.currentUser.server + webUrl ;
 
-        Log.i("111 url", url);
+        //Log.i("111 url", url);
 
         //getTextFromUrl(url);
 

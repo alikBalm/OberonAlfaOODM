@@ -1,4 +1,4 @@
-#Thu Oct 25 17:06:12 MSK 2018
+#Fri Oct 26 14:30:33 MSK 2018
 base.0=/home/OBERON/alik.balm/AndroidStudioProjects/1/OberonAlfaOODM/app/build/intermediates/transforms/dexMerger/debug/0
 path.0=classes.dex
 renamed.0=classes.dex

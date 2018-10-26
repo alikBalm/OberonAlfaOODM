@@ -38,6 +38,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -68,7 +69,7 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
     ListView listView;
     CustomListAdapter cla;
 
-    ImageView syncImage, logoutImage, sendMessageImage, createFolderImage;
+    ImageView syncImage, logoutImage, sendMessageImage, createFolderImage, uploadFileImage;
 
     File fileToUpload;
 
@@ -77,7 +78,7 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
 
     EditText createTitle, createTextForTXT;
 
-    Button createButton, uploadFile;
+    Button createButton;
 
     // эта перем нужна для того чтоб можно было создавать папки и файлы внутри неё
     // для остальных папок есть айди, а эта инициируется через 11 или @my
@@ -167,6 +168,9 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
 
         if (data!=null) {
 
+
+            uploadFileImage.setImageResource(R.drawable.upload_file_red);
+
             initializeFileFromUri(data.getData());
 
             //Log.i("filePath", fileToUpload.getPath());
@@ -194,19 +198,18 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
         createTitle = (EditText) findViewById(R.id.createTitle);
         createTextForTXT = (EditText) findViewById(R.id.createTextForTXT);
 
-        uploadFile = (Button) findViewById(R.id.uploadFile);
+        uploadFileImage = (ImageView) findViewById(R.id.uploadFileImage);
 
-        uploadFile.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
+        uploadFileImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
-                        Intent i = new Intent(Intent.ACTION_GET_CONTENT);
-                        i.setType("file/*");
-                        startActivityForResult(i, 1);
-                    }
-                }
-        );
+                Intent i = new Intent(Intent.ACTION_GET_CONTENT);
+                i.setType("file/*");
+                startActivityForResult(i, 1);
+
+            }
+        });
 
 
         createButton = (Button) findViewById(R.id.createButton);
@@ -445,7 +448,7 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
 
 
         retrofit = new Retrofit.Builder()
-                .baseUrl("https://" + MainActivity.currentUser.server)
+                .baseUrl(MainActivity.currentUser.server)
                 .client(client)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
@@ -470,6 +473,8 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
 
         // думаю нужно попробовать retrofit если ок тогда изучить эту библиотеку
         // и заменить все запросы с volley на retrofit
+
+        //меняем цвет картинки на экране
 
         folderId =
                 folderId == MainActivity.hardcoredListId.getDocuments_mydoc()
@@ -499,133 +504,47 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
         uploadFile.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, retrofit2.Response<ResponseBody> response) {
-                    Toast.makeText(OOItemListActivity.this, "File Upload Success", Toast.LENGTH_SHORT).show();
+                // возвращаем цвет картинки загрузки файла
+                uploadFileImage.setImageResource(R.drawable.upload_file);
+                Toast.makeText(OOItemListActivity.this, "File Upload Success", Toast.LENGTH_SHORT).show();
+                syncScreenWithOO();
             }
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
+                // вовращаем цвет картинки загрузки файла
+                uploadFileImage.setImageResource(R.drawable.upload_file);
                 t.printStackTrace();
                 Log.i("!!! onFailure", t.getMessage());
             }
         });
-
-
-        /* это способ с volley который так и не заработал
-        //String testUrl = "https://oberon-alfa.ru:8080";
-
-
-        String url = "https://"+ MainActivity.currentUser.server +"/api/2.0/files/482/upload";
-
-        Map<String, String> paramis = new HashMap<String, String>();
-
-        paramis.put("data", fileUrl);
-
-        paramis.put("Content-Disposition", "form-data");
-
-        //paramis.put("filename", "network.png");
-
-        paramis.put("name", "network.png");
-
-        paramis.put("filename","network.png");
-
-        paramis.put("Content-Type", "image/png");
-
-
-
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
-                (Request.Method.POST, url, new JSONObject(paramis),  new Response.Listener<JSONObject>() {
-
-                    @Override
-                    public void onResponse(JSONObject response) {
-
-                        Log.i(" Upload File ", response.toString());
-
-                    }
-                }, new Response.ErrorListener() {
-
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-
-                        if (error instanceof NoConnectionError) {
-                            Toast.makeText(OOItemListActivity.this, "Error while connecting to "+ MainActivity.currentUser.server + "\nTry Sync Later!", Toast.LENGTH_SHORT).show();
-                            syncImage.setImageResource(R.drawable.sync2);
-                        }
-                        error.printStackTrace();
-                        //Log.i(" Error", error.getMessage());
-                    }
-                }) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> params = new HashMap<String, String>();
-
-
-                //params.put("accept", "application/json");
-                //params.put("accept-encoding", "gzip, deflate");
-                //params.put("accept-language", "en-US,en;q=0.8");
-                params.put("content-type", "multipart/form-data");
-                params.put("authorization", MainActivity.currentUser.token);
-
-                return params;
-            }
-
-        };
-        MySingleton.getInstance(OOItemListActivity.this).addToRequestQueue(jsonObjectRequest);*/
-
-        //syncScreenWithOO();
-
-
     }
 
     void createFileInDocs(Integer screenId){
-        //   POST api/2.0/files/{folderId}/file api/2.0/files/{folderId}/text
 
-        String typeInUrl, fileTitle;
+        String typeInUrl, fileTitle, content;
 
         typeInUrl = fileTypeFromSpinner.equals("txt") ? "text" : "file" ;
+
+        content = typeInUrl.equals("text") ? createTextForTXT.getText().toString() : "false";
 
         Integer parenFolderId = screenId == MainActivity.hardcoredListId.getDocuments_mydoc() ? myDocumentsFolderId : screenId;
 
         fileTitle = createTitle.getText().toString() + MainActivity.hardcoredListId.fileTypeForCreation.get(fileTypeFromSpinner);
 
-        String url = "https://"+ MainActivity.currentUser.server +"/api/2.0/files/"+ parenFolderId.toString() +"/"+ typeInUrl ;
+        Call<ResponseBody> createFile = service.createFile(MainActivity.currentUser.token,parenFolderId,typeInUrl,fileTitle,content);
 
-        Map<String, String> paramis = new HashMap<String, String>();
-
-        paramis.put("title", fileTitle);
-        if (typeInUrl.equals("text")) { paramis.put("content", createTextForTXT.getText().toString()); }
-
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
-                (Request.Method.POST, url, new JSONObject(paramis),  new Response.Listener<JSONObject>() {
-
-                    @Override
-                    public void onResponse(JSONObject response) {
-
-                        Log.i(" Create File ", response.toString());
-
-                    }
-                }, new Response.ErrorListener() {
-
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-
-                        if (error instanceof NoConnectionError) {
-                            Toast.makeText(OOItemListActivity.this, "Error while connecting to "+ MainActivity.currentUser.server + "\nTry Sync Later!", Toast.LENGTH_SHORT).show();
-                            syncImage.setImageResource(R.drawable.sync2);
-                        }
-                        error.printStackTrace();
-                    }
-                }) {
+        createFile.enqueue(new Callback<ResponseBody>() {
             @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("Authorization", MainActivity.currentUser.token);
-                return params;
+            public void onResponse(Call<ResponseBody> call, retrofit2.Response<ResponseBody> response) {
+                Toast.makeText(OOItemListActivity.this, "File Create Success", Toast.LENGTH_SHORT).show();
+                syncScreenWithOO();
             }
-
-        };
-        MySingleton.getInstance(OOItemListActivity.this).addToRequestQueue(jsonObjectRequest);
-
-        syncScreenWithOO();
-
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.i("!!! onFailure", "createFileInDocs " + t.getMessage());
+                syncImage.setImageResource(R.drawable.sync2);
+            }
+        });
     }
 
     // этот метод создаёт папку на сср в папке список которой отображается на экране
@@ -636,7 +555,24 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
         Integer parenFolderId = screenId == MainActivity.hardcoredListId.getDocuments_mydoc() ? myDocumentsFolderId : screenId;
         String folderTitle = createTitle.getText().toString();
 
-        String url = "https://"+ MainActivity.currentUser.server +"/api/2.0/files/folder/"+
+        Call<ResponseBody> createFolder = service.createFolder(MainActivity.currentUser.token,parenFolderId,folderTitle);
+
+        createFolder.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, retrofit2.Response<ResponseBody> response) {
+                Toast.makeText(OOItemListActivity.this, "Folder Create Success", Toast.LENGTH_SHORT).show();
+                syncScreenWithOO();
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.i("!!! onFailure", "createFolderInDocs " + t.getMessage());
+                syncImage.setImageResource(R.drawable.sync2);
+            }
+        });
+
+          /*
+        String url = MainActivity.currentUser.server +"/api/2.0/files/folder/"+
                 parenFolderId.toString();
 
         Map<String, String> paramis = new HashMap<String, String>();
@@ -673,7 +609,8 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
         };
         MySingleton.getInstance(OOItemListActivity.this).addToRequestQueue(jsonObjectRequest);
 
-        syncScreenWithOO();
+         */
+
 
 
     }
@@ -692,72 +629,53 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
             Log.i("SQLLITE NO SUCH TABLE", e.getMessage());
             emptyMessageBD = true;
         }
-
-        String url = "https://" +
-                MainActivity.currentUser.server + "/api/2.0/mail/messages?folder=" + String.valueOf(folderId) + "&page_size=100";
         final Boolean finalEmptyMessageBD = emptyMessageBD;
 
+        Call<ResponseBody> getMailMessages = service.getMailMessages(MainActivity.currentUser.token,folderId,100);
 
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
-                (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        if (!finalEmptyMessageBD) { // если не пустая база
-
-                            //это пока нет обновления а просто очистка базы и заполнение новыми значениями
-
-                            MailMessage.clearTableByScreenId(folderId);
-
-                        }
-
-                        try {
-                            JSONArray resp = response.getJSONArray("response");
-                            // здесь у нас есть массив json в который входят 5 объектов json
-                            // выполняем foreach и заполняем базу для дальнейшего расположения на экране
-                            for (int j = 0; j < resp.length(); j++) {
-
-                                JSONObject messageObject = resp.getJSONObject(j);
-
-                                Integer messageId = messageObject.getInt("id");
-                                Integer messageFolderId = messageObject.getInt("folder");
-                                String messageSubject = messageObject.getString("subject");
-                                String messageReceivedDate = messageObject.getString("receivedDate");
-                                Boolean messageIsNew = messageObject.getBoolean("isNew");
-
-                                new MailMessage(messageId, messageFolderId, messageSubject, messageReceivedDate, messageIsNew).save();
-
-                            }
-
-                            List<MailFolders> findNameByFolderId = Select.from(MailFolders.class).where(Condition.prop("folder_id").eq(folderId)).list();
-                            Toast.makeText(OOItemListActivity.this, findNameByFolderId.get(0).folderName + " Synchronized", Toast.LENGTH_SHORT).show();
-                            initializeArraylistsForListView(getListIndex());
-
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-                    }
-                }, new Response.ErrorListener() {
-
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-
-                        error.printStackTrace();
-
-                    }
-                }) {
+        getMailMessages.enqueue(new Callback<ResponseBody>() {
             @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("Authorization", MainActivity.currentUser.token);
-                return params;
+            public void onResponse(Call<ResponseBody> call, retrofit2.Response<ResponseBody> response) {
+                if (!finalEmptyMessageBD) { // если не пустая база
+
+                    //это пока нет обновления а просто очистка базы и заполнение новыми значениями
+                    MailMessage.clearTableByScreenId(folderId);
+                }
+
+                try {
+                    JSONObject resp = new JSONObject(response.body().string());
+                    JSONArray r = resp.getJSONArray("response");
+                    for (int j = 0; j < r.length(); j++) {
+
+                        JSONObject messageObject = r.getJSONObject(j);
+
+                        Integer messageId = messageObject.getInt("id");
+                        Integer messageFolderId = messageObject.getInt("folder");
+                        String messageSubject = messageObject.getString("subject");
+                        String messageReceivedDate = messageObject.getString("receivedDate");
+                        Boolean messageIsNew = messageObject.getBoolean("isNew");
+
+                        new MailMessage(messageId, messageFolderId, messageSubject, messageReceivedDate, messageIsNew).save();
+
+                    }
+
+                    List<MailFolders> findNameByFolderId = Select.from(MailFolders.class).where(Condition.prop("folder_id").eq(folderId)).list();
+                    Toast.makeText(OOItemListActivity.this, findNameByFolderId.get(0).folderName + " Synchronized", Toast.LENGTH_SHORT).show();
+                    initializeArraylistsForListView(getListIndex());
+
+                } catch (JSONException e) {
+                    Log.i("!!! JSONException", "getMessagesFromOOByListId " + e.getMessage());
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    Log.i("!!! IOException", "getMessagesFromOOByListId " + e.getMessage());
+                    e.printStackTrace();
+                }
             }
-
-        };
-        MySingleton.getInstance(OOItemListActivity.this).addToRequestQueue(jsonObjectRequest);
-
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.i("!!! onFailure", "getMessagesFromOOByListId " + t.getMessage());
+            }
+        });
 
     }
 
@@ -827,93 +745,77 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
         noFoldersInDocFoldersOnOO = false;
         noFilesInDocFoldersOnOO = false;
 
-        String url = "https://" + MainActivity.currentUser.server + "/api/2.0/files/" + docFolderNameForHttpGET(id);
+        Call<ResponseBody> getFolderAndFiles = service.getDocFoldersAndFiles(MainActivity.currentUser.token,docFolderNameForHttpGET(id));
 
-        // get запрос
-
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
-                (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-
-                    @Override
-                    public void onResponse(JSONObject response) {
-
-                        // если базы не пустые
-
-                        clearDocFoldersAndFilesOfCurrentScreenId();
-
-                        // здесь работаем на json ответом
-
-                        try {
-
-                            JSONObject resp = response.getJSONObject("response");
-                            if (id == MainActivity.hardcoredListId.getDocuments_mydoc()) {
-                                // тут извлекаем current id и приравниваем его к myDocumentsFolderId
-                                JSONObject current = resp.getJSONObject("current");
-                                myDocumentsFolderId = current.getInt("id");
-                            }
-                            // работа с массивом папок
-                            JSONArray foldersArray = resp.getJSONArray("folders");
-                            if (foldersArray.length() < 1) {
-                                noFoldersInDocFoldersOnOO = true;
-                            } else {
-                                for (int i = 0; i < foldersArray.length(); i++) {
-
-                                    JSONObject folder = foldersArray.getJSONObject(i);
-                                    DocumentFolders docFolder = new DocumentFolders(folder.getInt("id"), folder.getString("title"));
-                                    docFolder.docFolderListId = id;
-                                    docFolder.save();
-
-                                }
-                            }
-                            // работа с массивом файлов
-                            JSONArray filesArray = resp.getJSONArray("files");
-                            if (filesArray.length() < 1) {
-                                noFilesInDocFoldersOnOO = true;
-                            } else {
-                                for (int i = 0; i < filesArray.length(); i++) {
-
-                                    JSONObject file = filesArray.getJSONObject(i);
-                                    DocumentsFiles docFile = new DocumentsFiles(
-                                            file.getInt("id"),
-                                            file.getString("title"),
-                                            file.getString("fileExst"),
-                                            file.getString("viewUrl"),
-                                            file.getString("webUrl"));
-                                    docFile.docFileListId = id;
-                                    docFile.save();
-
-                                }
-                            }
-                                initializeArraylistsForListView(id);
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }, new Response.ErrorListener() {
-
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-
-                        if (error instanceof NoConnectionError) {
-                            Toast.makeText(OOItemListActivity.this, "Error while connecting to "+ MainActivity.currentUser.server + "\nTry Sync Later!", Toast.LENGTH_SHORT).show();
-                            syncImage.setImageResource(R.drawable.sync2);
-                        }
-                        error.printStackTrace();
-                    }
-                }) {
+        getFolderAndFiles.enqueue(new Callback<ResponseBody>() {
             @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("Authorization", MainActivity.currentUser.token);
-                return params;
+            public void onResponse(Call<ResponseBody> call, retrofit2.Response<ResponseBody> response) {
+                // если базы не пустые
+                clearDocFoldersAndFilesOfCurrentScreenId();
+
+                try {
+                    JSONObject resp = new JSONObject(response.body().string());
+
+                    //Log.i("!!! resp ", resp.toString());
+
+                    JSONObject r = resp.getJSONObject("response");
+
+                    if (id == MainActivity.hardcoredListId.getDocuments_mydoc()) {
+                        // тут извлекаем current id и приравниваем его к myDocumentsFolderId
+                        JSONObject current = r.getJSONObject("current");
+                        myDocumentsFolderId = current.getInt("id");
+                    }
+                    // работа с массивом папок
+                    JSONArray foldersArray = r.getJSONArray("folders");
+                    if (foldersArray.length() < 1) {
+                        noFoldersInDocFoldersOnOO = true;
+                    } else {
+                        for (int i = 0; i < foldersArray.length(); i++) {
+
+                            JSONObject folder = foldersArray.getJSONObject(i);
+                            DocumentFolders docFolder = new DocumentFolders(folder.getInt("id"), folder.getString("title"));
+                            docFolder.docFolderListId = id;
+                            docFolder.save();
+
+                        }
+                    }
+                    // работа с массивом файлов
+                    JSONArray filesArray = r.getJSONArray("files");
+                    if (filesArray.length() < 1) {
+                        noFilesInDocFoldersOnOO = true;
+                    } else {
+                        for (int i = 0; i < filesArray.length(); i++) {
+
+                            JSONObject file = filesArray.getJSONObject(i);
+                            DocumentsFiles docFile = new DocumentsFiles(
+                                    file.getInt("id"),
+                                    file.getString("title"),
+                                    file.getString("fileExst"),
+                                    file.getString("viewUrl"),
+                                    file.getString("webUrl"));
+                            docFile.docFileListId = id;
+                            docFile.save();
+
+                        }
+                    }
+                    initializeArraylistsForListView(id);
+
+                } catch (JSONException e) {
+                    Log.i("!!! JSONException", "GetFolderFoldersAndFilesByListId " + e.getMessage());
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    Log.i("!!! IOException", "GetFolderFoldersAndFilesByListId " + e.getMessage());
+                    e.printStackTrace();
+                }
+
+
             }
 
-        };
-        MySingleton.getInstance(OOItemListActivity.this).addToRequestQueue(jsonObjectRequest);
-
-
-
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.i("!!! onFailure", "GetFolderFoldersAndFilesByListId " + t.getMessage());
+            }
+        });
     }
 
     // метод для чтения писем по id письма
@@ -946,64 +848,51 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
             Log.i("SQLLITE NO SUCH TABLE", e.getMessage());
             emptyFolderBD = true;
         }
-
-
-        String url = "https://" + MainActivity.currentUser.server + "/api/2.0/mail/folders";// сам запрос
         final Boolean finalEmptyFolderBD = emptyFolderBD;
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
-                (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
 
-                    @Override
-                    public void onResponse(JSONObject response) {
+        Call<ResponseBody> rootMailFolders = service.getRootMailFolders(MainActivity.currentUser.token);
 
-                        try {
-                            JSONArray resp = response.getJSONArray("response");
-                            // здесь у нас есть массив json в который входят 5 объектов json
-                            // выполняем foreach и заполняем базу для дальнейшего расположения на экране
-                            for (int j = 0; j < resp.length(); j++) {
-
-                                JSONObject folderObject = resp.getJSONObject(j);
-                                Integer id = (Integer) folderObject.getInt("id");
-                                Integer unread_messages = (Integer) folderObject.getInt("unread_messages");
-                                Integer total_count = (Integer) folderObject.getInt("total_count");
-
-                                if (finalEmptyFolderBD) {
-                                    new MailFolders(id, unread_messages, total_count).save();
-                                } else {
-                                    List<MailFolders> folderToUpdate = Select.from(MailFolders.class).where(Condition.prop("folder_id").eq(id)).list();
-                                    folderToUpdate.get(0).unreadCount = unread_messages;
-                                    folderToUpdate.get(0).totalCount = total_count;
-                                    folderToUpdate.get(0).save();
-                                }
-                            }
-
-                            initializeArraylistsForListView(getListIndex());
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-                    }
-                }, new Response.ErrorListener() {
-
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        // TODO: Handle error
-
-                        error.printStackTrace();
-
-                    }
-                }) {
+        rootMailFolders.enqueue(new Callback<ResponseBody>() {
             @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("Authorization", MainActivity.currentUser.token);
-                return params;
+            public void onResponse(Call<ResponseBody> call, retrofit2.Response<ResponseBody> response) {
+
+                try {
+                    JSONObject resp = new JSONObject(response.body().string());
+
+                    JSONArray r = resp.getJSONArray("response");
+
+                    for (int j = 0; j < r.length(); j++) {
+
+                        JSONObject folderObject = r.getJSONObject(j);
+                        Integer id = (Integer) folderObject.getInt("id");
+                        Integer unread_messages = (Integer) folderObject.getInt("unread_messages");
+                        Integer total_count = (Integer) folderObject.getInt("total_count");
+
+                        if (finalEmptyFolderBD) {
+                            new MailFolders(id, unread_messages, total_count).save();
+                        } else {
+                            List<MailFolders> folderToUpdate = Select.from(MailFolders.class).where(Condition.prop("folder_id").eq(id)).list();
+                            folderToUpdate.get(0).unreadCount = unread_messages;
+                            folderToUpdate.get(0).totalCount = total_count;
+                            folderToUpdate.get(0).save();
+                        }
+                    }
+
+                    initializeArraylistsForListView(getListIndex());
+
+                } catch (JSONException e) {
+                    Log.i("!!! JSONException", "inititalizeMailFolders() " + e.getMessage());
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    Log.i("!!! IOException", "inititalizeMailFolders() " + e.getMessage());
+                    e.printStackTrace();
+                }
             }
-
-        };
-        MySingleton.getInstance(OOItemListActivity.this).addToRequestQueue(jsonObjectRequest);
-
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.i("!!! onFailure", "inititalizeMailFolders() " + t.getMessage());
+            }
+        });
     }
 
     void initializeDocumentFolders(){
@@ -1071,8 +960,41 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
     // письмо, причём если вы не в корзине тогда он дожен спрашивать вы действительно хотите переместить в корзину
     void moveMessageToTrashOrDelete(Integer messageId) {
 
+        Call<ResponseBody> moveOrRemoveMessage = service.moveOrRemoveMessage(
+                MainActivity.currentUser.token,
+                getListIndex() != 4 ? "move" : "remove",
+                messageId,
+                getListIndex() != 4 ? null : 4);
 
-        String url = "https://" + MainActivity.currentUser.server + "/api/2.0/mail/messages/";
+        moveOrRemoveMessage.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, retrofit2.Response<ResponseBody> response) {
+                try {
+                    JSONObject resp = new JSONObject(response.body().string());
+                    Integer statusCode = resp.getInt("statusCode");
+                    if (statusCode == 200) {
+                        syncScreenWithOO();
+                    }
+                } catch (JSONException e) {
+                    Log.i("!!! JSONException", "moveMessageToTrashOrDelete " + e.getMessage());
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    Log.i("!!! IOException", "moveMessageToTrashOrDelete " + e.getMessage());
+                    e.printStackTrace();
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.i("!!! onFailure", "moveMessageToTrashOrDelete " + t.getMessage());
+            }
+        });
+
+         /*
+
+
+        String url = MainActivity.currentUser.server + "/api/2.0/mail/messages/";
 
         String folderName = getListIndex() != 4 ? "move" : "remove";
 
@@ -1090,9 +1012,9 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
             paramis.put("folder", 4);
         }
 
-        //запрос POST при котором возвращается JSONOBJECT с которым уже можно работать и извлекать из него данные
+        //запрос PUT при котором возвращается JSONOBJECT с которым уже можно работать и извлекать из него данные
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
-                (Request.Method.PUT/* тут мы указываем тип запроса*/, url + folderName, new JSONObject(paramis)/* здесь мы указываем параметры*/, new Response.Listener<JSONObject>() {
+                (Request.Method.PUT, url + folderName, new JSONObject(paramis), new Response.Listener<JSONObject>() {
 
                     @Override
                     public void onResponse(JSONObject response) {
@@ -1131,6 +1053,7 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
 
         };
         MySingleton.getInstance(OOItemListActivity.this).addToRequestQueue(jsonObjectRequest);
+         */
     }
 
     void initializeArraylistsForListView(Integer indexofList) {
@@ -1160,6 +1083,7 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
             initializeRootDocsScreen();
 
             createFolderImage.setVisibility(View.INVISIBLE);
+            uploadFileImage.setVisibility(View.INVISIBLE);
 
         } else if (indexofList >= MainActivity.hardcoredListId.getMail_inbox() && indexofList <= MainActivity.hardcoredListId.getMail_spam()) {
 
@@ -1170,14 +1094,20 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
             initializeDocsFoldersScreen();
 
             if (getListIndex() == MainActivity.hardcoredListId.getDocuments_mydoc()) {
-                createFolderImage.setVisibility(View.VISIBLE);} else {createFolderImage.setVisibility(View.INVISIBLE);}
+                createFolderImage.setVisibility(View.VISIBLE);
+                uploadFileImage.setVisibility(View.VISIBLE);
+            } else {createFolderImage.setVisibility(View.INVISIBLE);uploadFileImage.setVisibility(View.INVISIBLE);}
 
         } else {
 
             initializeDocsFoldersScreen();
 
             if (MainActivity.listIdStack.contains(MainActivity.hardcoredListId.getDocuments_mydoc())){
-            createFolderImage.setVisibility(View.VISIBLE);} else {createFolderImage.setVisibility(View.INVISIBLE);}
+                createFolderImage.setVisibility(View.VISIBLE);
+                uploadFileImage.setVisibility(View.VISIBLE);
+            } else {
+                createFolderImage.setVisibility(View.INVISIBLE);
+                uploadFileImage.setVisibility(View.INVISIBLE);}
 
         }
 

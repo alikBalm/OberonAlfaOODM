@@ -2969,9 +2969,11 @@ public final class R {
     public static final int trash_folder=0x7f070086;
     public static final int txt=0x7f070087;
     public static final int unknown=0x7f070088;
-    public static final int wiki=0x7f070089;
-    public static final int xls=0x7f07008a;
-    public static final int zip=0x7f07008b;
+    public static final int upload_file=0x7f070089;
+    public static final int upload_file_red=0x7f07008a;
+    public static final int wiki=0x7f07008b;
+    public static final int xls=0x7f07008c;
+    public static final int zip=0x7f07008d;
   }
   public static final class id {
     public static final int ALT=0x7f080000;
@@ -3169,7 +3171,7 @@ public final class R {
     public static final int topPanel=0x7f0800c0;
     public static final int uniform=0x7f0800c1;
     public static final int up=0x7f0800c2;
-    public static final int uploadFile=0x7f0800c3;
+    public static final int uploadFileImage=0x7f0800c3;
     public static final int useLogo=0x7f0800c4;
     public static final int ver_guid_90=0x7f0800c5;
     public static final int viewMessageLayout=0x7f0800c6;

@@ -672,9 +672,11 @@ int drawable trash 0x7f070085
 int drawable trash_folder 0x7f070086
 int drawable txt 0x7f070087
 int drawable unknown 0x7f070088
-int drawable wiki 0x7f070089
-int drawable xls 0x7f07008a
-int drawable zip 0x7f07008b
+int drawable upload_file 0x7f070089
+int drawable upload_file_red 0x7f07008a
+int drawable wiki 0x7f07008b
+int drawable xls 0x7f07008c
+int drawable zip 0x7f07008d
 int id ALT 0x7f080000
 int id CTRL 0x7f080001
 int id FUNCTION 0x7f080002
@@ -870,7 +872,7 @@ int id top 0x7f0800bf
 int id topPanel 0x7f0800c0
 int id uniform 0x7f0800c1
 int id up 0x7f0800c2
-int id uploadFile 0x7f0800c3
+int id uploadFileImage 0x7f0800c3
 int id useLogo 0x7f0800c4
 int id ver_guid_90 0x7f0800c5
 int id viewMessageLayout 0x7f0800c6

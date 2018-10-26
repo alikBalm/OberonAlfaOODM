@@ -442,7 +442,9 @@ public class MainActivity extends AppCompatActivity {
                         JSONObject account = r.getJSONObject(0);
                         userEmail = account.getString("email");
 
-                        // кстати отсюда можно и подпись доставать  также как и почту signature
+
+                        //! кстати отсюда можно и подпись доставать  также как и почту signature
+
                         Log.i("!!! email", userEmail);
 
                         currentUser = new LogedUsers(serverUrl, username, passwordText, token, userEmail);
@@ -472,13 +474,12 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.i("!!! onFailure", t.getMessage());
 
             }
         });
 
-        /*Second commit
-        Начал переделывать приложения с библиотеки volley на retrofit
-        пока переделал только в MainActivity*/
+
         //
 
         /*String url =
