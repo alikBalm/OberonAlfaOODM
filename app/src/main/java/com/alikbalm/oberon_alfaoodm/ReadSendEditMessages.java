@@ -11,21 +11,17 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.NetworkResponse;
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.ServerError;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.HttpHeaderParser;
-import com.android.volley.toolbox.JsonObjectRequest;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
-import java.util.Map;
+import java.io.IOException;
+
+
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ReadSendEditMessages extends AppCompatActivity {
 
@@ -41,11 +37,22 @@ public class ReadSendEditMessages extends AppCompatActivity {
 
     Boolean newMessage;
 
+    // Объекты для Retrofit
+    Retrofit retrofit;
+    OnlyOfficeApi service;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_read_send_edit_messages);
+
+        retrofit = new Retrofit.Builder()
+                .baseUrl(MainActivity.currentUser.server)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        service = retrofit.create(OnlyOfficeApi.class);
 
         viewMessageLayout = (ConstraintLayout) findViewById(R.id.viewMessageLayout);
         sendMessageLayout = (ConstraintLayout) findViewById(R.id.sendMessageLayout);
@@ -159,226 +166,126 @@ public class ReadSendEditMessages extends AppCompatActivity {
         Log.i("messageId",String.valueOf(messageIdToWork));
         Log.i("folderId",String.valueOf(messageFolderId));
         readMessageOnClick(messageIdToWork);
+
+
     }
 
     void readMessageOnClick(Integer messageId){
 
+        Call<ResponseBody> readMessagebyId = service.readMessageById(
+                MainActivity.currentUser.token,messageId,true);
 
-        String url = "https://"+ MainActivity.currentUser.server +"/api/2.0/mail/messages/" + String.valueOf(messageId) + "?markRead=true";
-
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
-                (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-
-                    @Override
-                    public void onResponse(JSONObject response) {
-
-                        try {
-                            JSONObject resp = response.getJSONObject("response");
-
-                            messageHTML = resp.getString("htmlBody");
-
-
-                            // адрес того кто мне прислал
-                            messageFrom = resp.getString("from");
-                            // адрес на который прислали , мой адрес
-                            messageTo = resp.getString("to");
-                            // дата письма
-                            String dateS = resp.getString("date");
-                            // тема письма
-                            messageSubject = resp.getString("subject");
-
-                            from.setText(from.getText()+messageFrom);
-                            to.setText(to.getText()+messageTo);
-                            date.setText(date.getText()+dateS);
-                            subject.setText(subject.getText()+messageSubject);
-
-                            readMessage.loadData(messageHTML,"text/html; charset=utf-8","UTF-8");
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-                    }
-                }, new Response.ErrorListener() {
-
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-
-                        error.printStackTrace();
-
-                    }
-                })
-        {
+        readMessagebyId.enqueue(new Callback<ResponseBody>() {
             @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("Authorization", MainActivity.currentUser.token);
-                return params;
+            public void onResponse(Call<ResponseBody> call, retrofit2.Response<ResponseBody> response) {
+
+                try {
+                    JSONObject respo = new JSONObject(response.body().string());
+                    JSONObject resp = respo.getJSONObject("response");
+
+                    messageHTML = resp.getString("htmlBody");
+                    // адрес того кто мне прислал
+                    messageFrom = resp.getString("from");
+                    // адрес на который прислали , мой адрес
+                    messageTo = resp.getString("to");
+                    // дата письма
+                    String dateS = resp.getString("date");
+                    // тема письма
+                    messageSubject = resp.getString("subject");
+
+                    from.setText(from.getText()+messageFrom);
+                    to.setText(to.getText()+messageTo);
+                    date.setText(date.getText()+dateS);
+                    subject.setText(subject.getText()+messageSubject);
+
+                    readMessage.loadData(messageHTML,"text/html; charset=utf-8","UTF-8");
+
+                } catch (JSONException e) {
+                    Log.i("!!! JSONException", "readMessageOnClick " + e.getMessage());
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    Log.i("!!! IOException", "readMessageOnClick " + e.getMessage());
+                    e.printStackTrace();
+                }
             }
-
-        };
-        MySingleton.getInstance(ReadSendEditMessages.this).addToRequestQueue(jsonObjectRequest);
-
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.i("!!! onFailure", "readMessageOnClick " + t.getMessage());
+            }
+        });
     }
 
     void sendMessageReplyOrForward(){
 
 
-        //здесь нужен put запрос PUT api/2.0/mail/messages/send
-        // при этом нужна новая активность либо просто создавать здесь макет отправки письма,
-        // куда нужно ввести адрес получателя, тему писма, сам текст письма
         // и в дальнейшем какие нибудь вложения
         // также нужно разобраться как менять подпись если понадобится
 
-        String url = "https://" + MainActivity.currentUser.server + "/api/2.0/mail/messages/send";
-        //String urlTest = "https://oberon-alfa.ru:8080";
+        Call<ResponseBody> sendMessageNew = service.sendMessage(
+                MainActivity.currentUser.token,
+                from_edit_text.getText().toString(),
+                to_edit_text.getText().toString(),
+                subject_edit_text.getText().toString(),
+                message_edit_text.getText().toString()
+        );
 
-
-        // это нужно для того чтоб применять параметры
-        Map<String, String> paramis = new HashMap<String, String>();
-
-
-        // в дальней
-        // тут можно ещё указывать id но я так и не понял дя чего он нужен
-        // поскольку я думаю сср сам должен генерировать id писем, в документации написано если не указать будет 0
-        // посмотрим после тестов что у нас получится и отпишуст сюда
-        // этот метод можно использовать на главном экране почты где отображаются папки писем,
-
-
-        // здесь в поле from обязательно указание почты currentUser, потому как если указать что-то другое то
-        // выдаёт ошибку 400 короче не проходит запрос на отправку письма
-
-        // чтоб создавать новое письмо для отправки
-        paramis.put("from", from_edit_text.getText().toString());
-        paramis.put("to", to_edit_text.getText().toString());
-        paramis.put("subject", subject_edit_text.getText().toString());
-        paramis.put("body", message_edit_text.getText().toString());
-
-
-
-
-        //запрос Put на отправку письма
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
-                (Request.Method.PUT/* тут мы указываем тип запроса*/,
-                        url,
-                        new JSONObject(paramis)/* здесь мы указываем параметры*/,
-                        new Response.Listener<JSONObject>() {
-
-                    @Override
-                    public void onResponse(JSONObject response) {
-
-                        Log.i(" response ",response.toString());
-
-
-                        try {
-                            Integer statusCode = response.getInt("statusCode");
-
-                            //Log.i("111 StatusCode", statusCode.toString());
-                            if (statusCode==200){
-
-                                Toast.makeText(ReadSendEditMessages.this, "Message Send", Toast.LENGTH_SHORT).show();
-                                ReadSendEditMessages.super.onBackPressed();
-
-                            }
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                            //Log.i("JSONException", e.getMessage());
-                        }
-
-
-                    }
-                }, new Response.ErrorListener() {
-
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-
-                        error.printStackTrace();
-
-
-
-
-
-                    }
-                })
-        {
+        sendMessageNew.enqueue(new Callback<ResponseBody>() {
             @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("Authorization", MainActivity.currentUser.token);
-                return params;
+            public void onResponse(Call<ResponseBody> call, retrofit2.Response<ResponseBody> response) {
+
+                try {
+                    JSONObject respo = new JSONObject(response.body().string());
+                    Integer statusCode = respo.getInt("statusCode");
+                    if (statusCode==200){
+                        Toast.makeText(ReadSendEditMessages.this, "Message Send", Toast.LENGTH_SHORT).show();
+                        ReadSendEditMessages.super.onBackPressed();
+                    }
+                } catch (JSONException e) {
+                    Log.i("!!! JSONException", "sendMessageReplyOrForward " + e.getMessage());
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    Log.i("!!! IOException", "sendMessageReplyOrForward " + e.getMessage());
+                    e.printStackTrace();
+                }
             }
-
-        };
-        MySingleton.getInstance(ReadSendEditMessages.this).addToRequestQueue(jsonObjectRequest);
-
-        //Log.i(" 111", jsonObjectRequest.toString());
-
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.i("!!! onFailure", "sendMessageReplyOrForward " + t.getMessage());
+            }
+        });
     }
 
     void moveMessageToFolder(Integer messageId){
 
+        Call<ResponseBody> moveOrRemoveMessage = service.moveOrRemoveMessage(
+                MainActivity.currentUser.token,
+                messageFolderId != 4 ? "move" : "remove",
+                messageId,
+                messageFolderId != 4 ? 4 : null);
 
-        String url = "https://" + MainActivity.currentUser.server + "/api/2.0/mail/messages/";
-
-        String folderName = messageFolderId!=4 ? "move" : "remove";
-
-
-        // это нужно для того чтоб применять параметры
-        Map<String, Integer> paramis = new HashMap<String, Integer>();
-
-
-        // в дальней
-        // список id писем которые хотим переместить
-        paramis.put("ids", messageId);
-
-        // id папки в которую хотим переместить, тест на корзину, потом нужно придумать как предоставлять выбор папки
-        // тут всё просто если папка не корзина то перемещается в корзину, если корзина то удаляется навсегда
-
-        if (messageFolderId!=4) { paramis.put("folder", 4); }
-
-        //запрос POST при котором возвращается JSONOBJECT с которым уже можно работать и извлекать из него данные
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
-                (Request.Method.PUT/* тут мы указываем тип запроса*/,
-                        url + folderName,
-                        new JSONObject(paramis)/* здесь мы указываем параметры*/,
-                        new Response.Listener<JSONObject>() {
-
-                    @Override
-                    public void onResponse(JSONObject response) {
-
-
-                        try {
-                            Integer statusCode = response.getInt("statusCode");
-                            if (statusCode==200){
-                                ReadSendEditMessages.super.onBackPressed();
-                            }
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-
-                    }
-                }, new Response.ErrorListener() {
-
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-
-                        //Log.i("111 Error", error.getMessage());
-                        error.printStackTrace();
-
-                    }
-                })
-        {
+        moveOrRemoveMessage.enqueue(new Callback<ResponseBody>() {
             @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("Authorization", MainActivity.currentUser.token);
-                return params;
+            public void onResponse(Call<ResponseBody> call, retrofit2.Response<ResponseBody> response) {
+                try {
+                    JSONObject resp = new JSONObject(response.body().string());
+                    Integer statusCode = resp.getInt("statusCode");
+                    if (statusCode == 200) {
+                        Toast.makeText(ReadSendEditMessages.this, "Message Deleted", Toast.LENGTH_SHORT).show();
+                        ReadSendEditMessages.super.onBackPressed();
+                    }
+                } catch (JSONException e) {
+                    Log.i("!!! JSONException", "moveMessageToFolder " + e.getMessage());
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    Log.i("!!! IOException", "moveMessageToFolder " + e.getMessage());
+                    e.printStackTrace();
+                }
             }
-
-        };
-        MySingleton.getInstance(ReadSendEditMessages.this).addToRequestQueue(jsonObjectRequest);
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.i("!!! onFailure", "moveMessageToFolder " + t.getMessage());
+            }
+        });
     }
+
 }

@@ -78,4 +78,20 @@ public interface OnlyOfficeApi {
     Call<ResponseBody> getEmailAddress(
             @Header("Authorization") String token
     );
+
+    @GET("api/2.0/mail/messages/{id}")
+    Call<ResponseBody> readMessageById(
+            @Header("Authorization") String token,
+            @Path("id") Integer messageId,
+            @Query("markRead") Boolean markRead
+    );
+
+    @PUT("api/2.0/mail/messages/send")
+    Call<ResponseBody> sendMessage(
+            @Header("Authorization") String token,
+            @Query("from") String from,
+            @Query("to") String to,
+            @Query("subject") String subject,
+            @Query("body") String body
+    );
 }

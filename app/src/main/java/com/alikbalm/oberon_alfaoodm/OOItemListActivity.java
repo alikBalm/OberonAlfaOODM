@@ -24,12 +24,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.NoConnectionError;
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.orm.query.Condition;
 import com.orm.query.Select;
 
@@ -42,9 +36,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.MediaType;
@@ -419,7 +411,8 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, final int position, long l) {
-                if (getListIndex() >= 1 && getListIndex() <= 5) {
+                if (getListIndex() >= MainActivity.hardcoredListId.getMail_inbox() &&
+                        getListIndex() <= MainActivity.hardcoredListId.getMail_spam()) {
                     // сначала сделать AlertDialog
                     // затем указать в нём метод удаления письма используя messageId(position)
                     String folderName = getListIndex() != 4 ? "move to Trash" : "Delete";
@@ -964,7 +957,7 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
                 MainActivity.currentUser.token,
                 getListIndex() != 4 ? "move" : "remove",
                 messageId,
-                getListIndex() != 4 ? null : 4);
+                getListIndex() != 4 ? 4 : null);
 
         moveOrRemoveMessage.enqueue(new Callback<ResponseBody>() {
             @Override
@@ -990,70 +983,6 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
                 Log.i("!!! onFailure", "moveMessageToTrashOrDelete " + t.getMessage());
             }
         });
-
-         /*
-
-
-        String url = MainActivity.currentUser.server + "/api/2.0/mail/messages/";
-
-        String folderName = getListIndex() != 4 ? "move" : "remove";
-
-        // это нужно для того чтоб применять параметры
-        Map<String, Integer> paramis = new HashMap<String, Integer>();
-
-
-        // в дальней
-        // список id писем которые хотим переместить
-        paramis.put("ids", messageId);
-
-        // id папки в которую хотим переместить, тест на корзину, потом нужно придумать как предоставлять выбор папки
-
-        if (getListIndex() != 4) {
-            paramis.put("folder", 4);
-        }
-
-        //запрос PUT при котором возвращается JSONOBJECT с которым уже можно работать и извлекать из него данные
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
-                (Request.Method.PUT, url + folderName, new JSONObject(paramis), new Response.Listener<JSONObject>() {
-
-                    @Override
-                    public void onResponse(JSONObject response) {
-
-
-                        try {
-                            Integer statusCode = response.getInt("statusCode");
-                            if (statusCode == 200) {
-                                // обновляем список, либо сообщаем пользователю что нужно обновить список т.к. данные не актуальны
-                                Toast.makeText(OOItemListActivity.this, "The Sync Button Needs To Be Pressed!", Toast.LENGTH_SHORT).show();
-
-                            }
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-
-                    }
-                }, new Response.ErrorListener() {
-
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-
-
-                        error.printStackTrace();
-
-                    }
-                }) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("Authorization", MainActivity.currentUser.token);
-                return params;
-            }
-
-        };
-        MySingleton.getInstance(OOItemListActivity.this).addToRequestQueue(jsonObjectRequest);
-         */
     }
 
     void initializeArraylistsForListView(Integer indexofList) {

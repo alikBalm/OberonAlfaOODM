@@ -9,7 +9,6 @@ import android.util.Log;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -17,24 +16,14 @@ import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.orm.query.Condition;
-import com.orm.query.Select;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
