@@ -160,48 +160,7 @@ public class MainActivity extends AppCompatActivity {
 
                         getTokenFromServer();
 
-                        /*String url = serverUrl + "/api/2.0/authentication";
 
-                        // это нужно для того чтоб применять параметры такие как имя пользователя и пароль
-                        Map<String, String> params = new HashMap<String, String>();
-
-                        // в дальней
-                        // имя пользователя на сср
-                        params.put("userName", username);
-                        // пароль на сср
-                        params.put("password", passwordText);
-
-                        //запрос POST при котором возвращается JSONOBJECT с которым уже можно работать и извлекать из него данные
-                        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
-                                (Request.Method.POST, url, new JSONObject(params) здесь мы указываем параметры, new Response.Listener<JSONObject>() {
-
-                                    @Override
-                                    public void onResponse(JSONObject response) {
-
-                                        try {
-                                            JSONObject resp = response.getJSONObject("response");
-                                            // здесь мы получаем токен в виде строки который можно использовать для Get запросов
-                                            token = resp.getString("token");
-
-                                            //Log.i("111 ", token);
-
-                                            getEmailByToken(token);
-
-                                        } catch (JSONException e) {
-                                            e.printStackTrace();
-                                        }
-
-                                    }
-                                }, new Response.ErrorListener() {
-
-                                    @Override
-                                    public void onErrorResponse(VolleyError error) {
-
-                                    }
-                                }) {
-
-                        };
-                        MySingleton.getInstance(MainActivity.this).addToRequestQueue(jsonObjectRequest);*/
 
                     }
 
@@ -468,77 +427,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
-        //
-
-        /*String url =
-                serverUrl +"/api/2.0/mail/accounts";
-
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
-                (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-
-                    @Override
-                    public void onResponse(JSONObject response) {
-
-                        try {
-
-                            //Log.i("111", response.toString());
-
-                            JSONArray resp = response.getJSONArray("response");
-                            if (resp.length()<1) {
-                                // это если у пользователя не настроен почтовый ящик
-                                currentUser = new LogedUsers(serverUrl, username, passwordText, token, "default.mail@default.default");
-                                currentUser.save();
-                            } else {
-                                JSONObject account = resp.getJSONObject(0);
-                                userEmail = account.getString("email");
-
-                                // кстати отсюда можно и подпись доставать  также как и почту signature
-
-                                currentUser = new LogedUsers(serverUrl, username, passwordText, token, userEmail);
-                                currentUser.save();
-                            }
-
-                            //Log.i("Token ", token);
-
-                            listIdDateStack = new HashMap<>();
-
-                            listIdStack = new ArrayList<>();
-
-                            listIdStack.add(hardcoredListId.getRoot_screen());
-
-                            // чистим поля ввода чтоб при возврате на экран не создавался дубликат пользователя
-                            server.setText("");
-                            e_mail.setText("");
-                            password.setText("");
-
-                            Intent intent = new Intent(getApplicationContext(), OOItemListActivity.class);
-                            startActivity(intent);
-
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-
-                    }
-                }, new Response.ErrorListener() {
-
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-
-                        error.printStackTrace();
-
-                    }
-                })
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("Authorization", tokenToSend);
-                return params;
-            }
-
-        };
-        MySingleton.getInstance(MainActivity.this).addToRequestQueue(jsonObjectRequest);*/
     }
 
     static void clearDBOnBackPressed() {

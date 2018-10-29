@@ -6,7 +6,6 @@ INJECTED from /home/OBERON/alik.balm/AndroidStudioProjects/1/OberonAlfaOODM/app/
 INJECTED from /home/OBERON/alik.balm/AndroidStudioProjects/1/OberonAlfaOODM/app/src/main/AndroidManifest.xml:2:1-50:12
 MERGED from [com.android.support:appcompat-v7:27.1.1] /home/OBERON/alik.balm/.gradle/caches/transforms-1/files-1.1/appcompat-v7-27.1.1.aar/932bcb1dd70000fb98aea42cc6b5f47d/AndroidManifest.xml:17:1-22:12
 MERGED from [com.android.support.constraint:constraint-layout:1.1.3] /home/OBERON/alik.balm/.gradle/caches/transforms-1/files-1.1/constraint-layout-1.1.3.aar/38d1b1f72fb256805f04e7a7b4a886d2/AndroidManifest.xml:2:1-11:12
-MERGED from [com.android.volley:volley:1.1.1] /home/OBERON/alik.balm/.gradle/caches/transforms-1/files-1.1/volley-1.1.1.aar/569d4cb45424e1d4977643116eb54e78/AndroidManifest.xml:2:1-11:12
 MERGED from [com.github.satyan:sugar:1.3] /home/OBERON/alik.balm/.gradle/caches/transforms-1/files-1.1/sugar-1.3.aar/d2f436972c9f3523f090c134d5842f19/AndroidManifest.xml:2:1-17:12
 MERGED from [com.android.support:support-fragment:27.1.1] /home/OBERON/alik.balm/.gradle/caches/transforms-1/files-1.1/support-fragment-27.1.1.aar/8da09448be5637cc57d15379534375f8/AndroidManifest.xml:17:1-22:12
 MERGED from [com.android.support:animated-vector-drawable:27.1.1] /home/OBERON/alik.balm/.gradle/caches/transforms-1/files-1.1/animated-vector-drawable-27.1.1.aar/672ef6ddbf9d042426f5612a51bf64cc/AndroidManifest.xml:17:1-22:12
@@ -49,8 +48,6 @@ application
 ADDED from /home/OBERON/alik.balm/AndroidStudioProjects/1/OberonAlfaOODM/app/src/main/AndroidManifest.xml:9:5-48:19
 MERGED from [com.android.support.constraint:constraint-layout:1.1.3] /home/OBERON/alik.balm/.gradle/caches/transforms-1/files-1.1/constraint-layout-1.1.3.aar/38d1b1f72fb256805f04e7a7b4a886d2/AndroidManifest.xml:9:5-20
 MERGED from [com.android.support.constraint:constraint-layout:1.1.3] /home/OBERON/alik.balm/.gradle/caches/transforms-1/files-1.1/constraint-layout-1.1.3.aar/38d1b1f72fb256805f04e7a7b4a886d2/AndroidManifest.xml:9:5-20
-MERGED from [com.android.volley:volley:1.1.1] /home/OBERON/alik.balm/.gradle/caches/transforms-1/files-1.1/volley-1.1.1.aar/569d4cb45424e1d4977643116eb54e78/AndroidManifest.xml:9:5-20
-MERGED from [com.android.volley:volley:1.1.1] /home/OBERON/alik.balm/.gradle/caches/transforms-1/files-1.1/volley-1.1.1.aar/569d4cb45424e1d4977643116eb54e78/AndroidManifest.xml:9:5-20
 MERGED from [com.github.satyan:sugar:1.3] /home/OBERON/alik.balm/.gradle/caches/transforms-1/files-1.1/sugar-1.3.aar/d2f436972c9f3523f090c134d5842f19/AndroidManifest.xml:11:5-15:19
 MERGED from [com.github.satyan:sugar:1.3] /home/OBERON/alik.balm/.gradle/caches/transforms-1/files-1.1/sugar-1.3.aar/d2f436972c9f3523f090c134d5842f19/AndroidManifest.xml:11:5-15:19
 	android:supportsRtl
@@ -136,8 +133,6 @@ MERGED from [com.android.support:appcompat-v7:27.1.1] /home/OBERON/alik.balm/.gr
 MERGED from [com.android.support:appcompat-v7:27.1.1] /home/OBERON/alik.balm/.gradle/caches/transforms-1/files-1.1/appcompat-v7-27.1.1.aar/932bcb1dd70000fb98aea42cc6b5f47d/AndroidManifest.xml:20:5-44
 MERGED from [com.android.support.constraint:constraint-layout:1.1.3] /home/OBERON/alik.balm/.gradle/caches/transforms-1/files-1.1/constraint-layout-1.1.3.aar/38d1b1f72fb256805f04e7a7b4a886d2/AndroidManifest.xml:5:5-7:41
 MERGED from [com.android.support.constraint:constraint-layout:1.1.3] /home/OBERON/alik.balm/.gradle/caches/transforms-1/files-1.1/constraint-layout-1.1.3.aar/38d1b1f72fb256805f04e7a7b4a886d2/AndroidManifest.xml:5:5-7:41
-MERGED from [com.android.volley:volley:1.1.1] /home/OBERON/alik.balm/.gradle/caches/transforms-1/files-1.1/volley-1.1.1.aar/569d4cb45424e1d4977643116eb54e78/AndroidManifest.xml:7:5-43
-MERGED from [com.android.volley:volley:1.1.1] /home/OBERON/alik.balm/.gradle/caches/transforms-1/files-1.1/volley-1.1.1.aar/569d4cb45424e1d4977643116eb54e78/AndroidManifest.xml:7:5-43
 MERGED from [com.github.satyan:sugar:1.3] /home/OBERON/alik.balm/.gradle/caches/transforms-1/files-1.1/sugar-1.3.aar/d2f436972c9f3523f090c134d5842f19/AndroidManifest.xml:7:5-9:41
 MERGED from [com.github.satyan:sugar:1.3] /home/OBERON/alik.balm/.gradle/caches/transforms-1/files-1.1/sugar-1.3.aar/d2f436972c9f3523f090c134d5842f19/AndroidManifest.xml:7:5-9:41
 MERGED from [com.android.support:support-fragment:27.1.1] /home/OBERON/alik.balm/.gradle/caches/transforms-1/files-1.1/support-fragment-27.1.1.aar/8da09448be5637cc57d15379534375f8/AndroidManifest.xml:20:5-44

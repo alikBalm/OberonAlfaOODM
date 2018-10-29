@@ -46,6 +46,7 @@ import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -340,10 +341,9 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
                         case "Википедия":
 
                             // отрисовка списка википедии
-                            /*
-                            addListIdAndPutSyncTime(8);
+                            MainActivity.listIdStack.add(MainActivity.hardcoredListId.getRoot_wiki());
                             initializeArraylistsForListView(getListIndex());
-                             */
+
                             break;
                         case "Контакты":
 
@@ -376,6 +376,11 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
                     MainActivity.listIdStack.add(position + 1);
                     initializeArraylistsForListView(getListIndex());
                     //getMessagesFromOOByListId(getListIndex());
+                } else if (getListIndex() == MainActivity.hardcoredListId.getRoot_wiki()) {
+                    // странчки вики
+
+                    openWikiPageFromList(itemString.get(position));
+
                 }  else if (getListIndex() >= MainActivity.hardcoredListId.getDocuments_mydoc() && getListIndex() <= MainActivity.hardcoredListId.getDocuments_trash()) {
                     // хождение по папкам документов и открытие файлов
 
@@ -447,6 +452,12 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
                 .build();
 
         service = retrofit.create(OnlyOfficeApi.class);
+    }
+
+    void openWikiPageFromList(String pageName) {
+        Intent intent = new Intent(getApplicationContext(),DocFilesReadWriteSaveDownload.class);
+        intent.putExtra("wikiPageName",pageName);
+        startActivity(intent);
     }
 
     void openDocumentFromList(Integer position) {
@@ -563,49 +574,6 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
                 syncImage.setImageResource(R.drawable.sync2);
             }
         });
-
-          /*
-        String url = MainActivity.currentUser.server +"/api/2.0/files/folder/"+
-                parenFolderId.toString();
-
-        Map<String, String> paramis = new HashMap<String, String>();
-        paramis.put("title", folderTitle);
-
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
-                (Request.Method.POST, url, new JSONObject(paramis),  new Response.Listener<JSONObject>() {
-
-                    @Override
-                    public void onResponse(JSONObject response) {
-
-                        Log.i(" Create Folder ", response.toString());
-
-                    }
-                }, new Response.ErrorListener() {
-
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-
-                        if (error instanceof NoConnectionError) {
-                            Toast.makeText(OOItemListActivity.this, "Error while connecting to "+ MainActivity.currentUser.server + "\nTry Sync Later!", Toast.LENGTH_SHORT).show();
-                            syncImage.setImageResource(R.drawable.sync2);
-                        }
-                        error.printStackTrace();
-                    }
-                }) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("Authorization", MainActivity.currentUser.token);
-                return params;
-            }
-
-        };
-        MySingleton.getInstance(OOItemListActivity.this).addToRequestQueue(jsonObjectRequest);
-
-         */
-
-
-
     }
 
     // этот метод получает один из айди папок или списков, в данном случае они совпадают
@@ -985,6 +953,47 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
         });
     }
 
+    void getWikiPagesList(){
+
+        final List<WikiPages> wikiPagesList = WikiPages.listAll(WikiPages.class);
+
+
+        Call<ResponseBody> getRootWiki = service.getWikiPages(MainActivity.currentUser.token);
+        getRootWiki.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    JSONObject respo = new JSONObject(response.body().string());
+                    JSONArray resp = respo.getJSONArray("response");
+                    if (wikiPagesList.size() < resp.length()) {
+
+                        for (int i = 0; i < resp.length(); i++) {
+                            JSONObject wikiPage = resp.getJSONObject(i);
+                            String name = wikiPage.getString("name");
+                            String content = wikiPage.getString("content");
+                            new WikiPages(name, content).save();
+                        }
+                        initializeArraylistsForListView(getListIndex());
+                    } else {
+                        initializeArraylistsForListView(getListIndex());
+                    }
+
+                } catch (JSONException e) {
+                    Log.i("!!! JSONException", "getWikiPagesList " + e.getMessage());
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    Log.i("!!! IOException", "getWikiPagesList " + e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.i("!!! onFailure", "getWikiPagesList " + t.getMessage());
+            }
+        });
+    }
+
     void initializeArraylistsForListView(Integer indexofList) {
 
         lastSyncData.setText(lastSyncTimeDate(getListIndex()));
@@ -1006,6 +1015,7 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
         } else if (indexofList == MainActivity.hardcoredListId.getRoot_wiki()) {
 
             // здесь построение списка википедии
+            initializeRootWikiScreen();
 
         } else if (indexofList == MainActivity.hardcoredListId.getRoot_documents()) {
 
@@ -1110,6 +1120,7 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
             inititalizeMailFolders();
         } else if (getListIndex() == MainActivity.hardcoredListId.getRoot_wiki()) {
             // википедия
+            getWikiPagesList();
         } else {
             // синхро внутри папок документов
             GetFolderFoldersAndFilesByListId(getListIndex());
@@ -1159,7 +1170,7 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
         // делаем запрос в локал бд чтоб извлеч все папки и настройки
 
         List<MailFolders> foldersToList = Select.from(MailFolders.class).orderBy("folder_id").list();
-        if (foldersToList.size() < 1 || foldersToList == null ){
+        if (foldersToList == null || foldersToList.size() < 1 ){
 
             syncScreenWithOO();
             //inititalizeMailFolders();
@@ -1268,6 +1279,22 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
             syncScreenWithOO();
         }
 
+
+    }
+    void initializeRootWikiScreen(){
+        itemString = new ArrayList<>();
+        itemPng = new ArrayList<>();
+
+        List<WikiPages> wikiPagesList = WikiPages.listAll(WikiPages.class);
+        if (wikiPagesList == null || wikiPagesList.size() < 1) {
+            syncScreenWithOO();
+        } else {
+            for (WikiPages wikiPage :
+                    wikiPagesList) {
+                itemString.add(wikiPage.wikiPageName);
+                itemPng.add(R.drawable.wiki);
+            }
+        }
 
     }
 

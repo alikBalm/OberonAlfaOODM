@@ -16,7 +16,6 @@ import retrofit2.http.Query;
 
 public interface OnlyOfficeApi {
 
-    //String token = MainActivity.currentUser.token;
 
     @POST("api/2.0/authentication")
     Call<ResponseBody> getToken(
@@ -93,5 +92,16 @@ public interface OnlyOfficeApi {
             @Query("to") String to,
             @Query("subject") String subject,
             @Query("body") String body
+    );
+
+    @GET("api/2.0/community/wiki")
+    Call<ResponseBody> getWikiPages(
+            @Header("Authorization") String token
+    );
+
+    @GET("api/2.0/community/wiki/{name}")
+    Call<ResponseBody> getWikiPageContent(
+            @Header("Authorization") String token,
+            @Path("name") String wikiPageName
     );
 }

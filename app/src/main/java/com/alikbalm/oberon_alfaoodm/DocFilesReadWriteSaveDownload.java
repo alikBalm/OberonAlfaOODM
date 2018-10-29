@@ -5,118 +5,107 @@ import android.os.Bundle;
 import android.util.Log;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
-import com.orm.query.Condition;
-import com.orm.query.Select;
-
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import okhttp3.OkHttpClient;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class DocFilesReadWriteSaveDownload extends AppCompatActivity {
 
     WebView docWebView;
+
+    Retrofit retrofit;
+    OnlyOfficeApi service;
+
+    String webUrl, wikiPageName, wikiPageContent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_doc_files_read_write_save_download);
 
+        OkHttpClient client = new OkHttpClient.Builder()
+                .connectTimeout(100, TimeUnit.SECONDS)
+                .readTimeout(100,TimeUnit.SECONDS).build();
+
+
+        retrofit = new Retrofit.Builder()
+                .baseUrl(MainActivity.currentUser.server)
+                .client(client)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        service = retrofit.create(OnlyOfficeApi.class);
+
+
         docWebView = (WebView) findViewById(R.id.docWebView);
 
         getSupportActionBar().hide();
-
-        // тут всё классно всё работает но нужно переделать потому как
-        // открывает просто страницу и можно ввести логин и пароль, потому как
-        // токен не передаём, нужно почитать как работать с документ сервером, и уже от него плясать
 
         docWebView.getSettings().setJavaScriptEnabled(true);
 
         docWebView.setWebViewClient(new WebViewClient());
 
-        Map<String, String> extraHeaders = new HashMap<String, String>();
-        //extraHeaders.put("Host",MainActivity.currentUser.server);
-        //extraHeaders.put("Accept","text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
-        extraHeaders.put("Authorization",MainActivity.currentUser.token );
-        //extraHeaders.put("Connection","keep-alive");
-        //extraHeaders.put("Host",MainActivity.currentUser.server);
+        webUrl = getIntent().getStringExtra("webUrl");
+        wikiPageName = getIntent().getStringExtra("wikiPageName");
+        if (webUrl != null) {
+            Map<String, String> extraHeaders = new HashMap<String, String>();
+            extraHeaders.put("Authorization",MainActivity.currentUser.token );
 
+            String url =
+                    webUrl.contains(MainActivity.currentUser.server) ?
+                            webUrl :
+                            MainActivity.currentUser.server + webUrl ;
 
-        //Host: alikoffice.onlyoffice.eu
-        //User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:62.0) Gecko/20100101 Firefox/62.0
-        //Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
-        //Accept-Language: ru-RU,ru;q=0.8,en-US;q=0.5,en;q=0.3
-        //Accept-Encoding: gzip, deflate, br
-        //Upgrade-Insecure-Requests: 1
-        //Cookie: %2Fproducts%2Ffiles%2F=%5B%22%22%2C%22%22%2C%22%22%2C%22%22%2C%22%22%2C%22%22%2C%22%22%2C%22%22%2C%22%22%5D; _ga=GA1.2.1588201736.1539252779; _gcl_au=1.1.2037872142.1539252780; _gid=GA1.2.1208027286.1539586963; lc_sso2673891=1539590227989; __lc.visitor_id.2673891=S1537791128.21b1ed5a65; lc_window_state=minimized; ASP.NET_SessionId=gikp1dquj2edilq4h353s2d2; _ga=GA1.3.1588201736.1539252779; _gid=GA1.3.1208027286.1539586963; asc_auth_key=2WrLhDf6yF8QkqpD7pp0c1GDZQnrch4G60CsieUC/O+GDtVn850ElIsVRw5sxwDTn3En42+5suKo3hv8b4TfY8IzkfwU98a6AoGpBMq0FWrzleRo0vmj/k3+/LGi0+Z5m7zUt5zihlEae2eCDgaLxOyJykO82Y0CPWA7kWnqPAk=; socketio.sid=s%3ApSnxVFGEXIIrfmOztJswdWernkotSHZF.K0OaQisWZjAACgA9%2BO153VFgQYd7WdkYCTvSoJkfN1M; %2F=%5B%22open%22%2C%22%22%2C%22%22%2C%22%22%2C%22open%22%2C%22%22%2C%22%22%2C%22%22%2C%22%22%2C%22open%22%2C%22%22%2C%22%22%2C%22%22%2C%22open%22%2C%22%22%2C%22%22%2C%22%22%2C%22%22%2C%22%22%2C%22%22%2C%22%22%2C%22%22%5D; _gat=1
-        //Connection: keep-alive
-
-
-        String webUrl = getIntent().getStringExtra("webUrl");
-
-        //Log.i("111 webUrl", webUrl);
-
-        String url =
-                webUrl.contains(MainActivity.currentUser.server) ?
-                webUrl :
-                MainActivity.currentUser.server + webUrl ;
-
-        //Log.i("111 url", url);
-
-        //getTextFromUrl(url);
-
-
-        docWebView.loadUrl(url,extraHeaders);
-
-
+            docWebView.loadUrl(url,extraHeaders);
+        } else if (wikiPageName != null ){
+           openWikiPageContent(wikiPageName);
+        }
     }
 
-    void getTextFromUrl(String urlWeb){
+    void openWikiPageContent(String name) {
 
 
-
-        StringRequest jsonObjectRequest = new StringRequest
-                (Request.Method.GET, urlWeb, new Response.Listener<String>() {
-
-                    @Override
-                    public void onResponse(String response) {
-
-                         Log.i("response",response);
-
-                        docWebView.loadData(response,"text/html; charset=utf-8","UTF-8");
-
-                    }
-                }, new Response.ErrorListener() {
-
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-
-                        error.printStackTrace();
-
-                    }
-                }) {
+        Call<ResponseBody> getWikiPageContent = service.getWikiPageContent(
+                MainActivity.currentUser.token,
+                name
+        );
+        getWikiPageContent.enqueue(new Callback<ResponseBody>() {
             @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("Authorization", MainActivity.currentUser.token);
-                return params;
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+
+                try {
+                    JSONObject respo = new JSONObject(response.body().string());
+                    JSONObject resp = respo.getJSONObject("response");
+                    wikiPageContent = resp.getString("content");
+                    docWebView.loadData(wikiPageContent,"text/html; charset=utf-8","UTF-8");
+                } catch (JSONException e) {
+                    Log.i("!!! JSONException", "getWikiPageContent " + e.getMessage());
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    Log.i("!!! IOException", "getWikiPageContent " + e.getMessage());
+                    e.printStackTrace();
+                }
+
             }
 
-        };
-        MySingleton.getInstance(DocFilesReadWriteSaveDownload.this).addToRequestQueue(jsonObjectRequest);
-
-
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.i("!!! onFailure", "getWikiPageContent " + t.getMessage());
+            }
+        });
 
     }
 }
