@@ -464,17 +464,17 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
     }
 
     void openWikiPageFromList(String pageName) {
+        DocFilesReadWriteSaveDownload test = new DocFilesReadWriteSaveDownload();
+        test.openWikiPageContent("sdfsdf");
         Intent intent = new Intent(getApplicationContext(),DocFilesReadWriteSaveDownload.class);
         intent.putExtra("wikiPageName",pageName);
         startActivity(intent);
     }
 
     void openContactUrl(String contactId){
-
         Intent intent = new Intent(getApplicationContext(),DocFilesReadWriteSaveDownload.class);
         intent.putExtra("contactId",contactId);
         startActivity(intent);
-
     }
 
     void openDocumentFromList(Integer position) {

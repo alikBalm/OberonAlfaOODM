@@ -11,6 +11,7 @@ anim abc_slide_out_bottom
 anim abc_slide_out_top
 anim abc_tooltip_enter
 anim abc_tooltip_exit
+anim rotate
 array file_type_to_add
 attr actionBarDivider
 attr actionBarItemBackground
@@ -667,6 +668,7 @@ drawable send_message
 drawable share_folder
 drawable spam
 drawable sync2
+drawable sync2_green
 drawable sync2_red
 drawable tooltip_frame_dark
 drawable tooltip_frame_light

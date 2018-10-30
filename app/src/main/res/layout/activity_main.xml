@@ -96,12 +96,23 @@
         android:layout_marginRight="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="login"
+        android:text="log\nin"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/guiline_80_hor" />
+
+    <ImageView
+        android:id="@+id/syncImage"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:src="@drawable/sync2_green"
+        android:visibility="invisible"
+        app:layout_constraintTop_toTopOf="@id/connect"
+        app:layout_constraintBottom_toBottomOf="@id/connect"
+        app:layout_constraintStart_toStartOf="@id/connect"
+        app:layout_constraintEnd_toEndOf="@id/connect"/>
 
 
 
@@ -144,6 +155,7 @@
         android:layout_marginLeft="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:visibility="invisible"
         android:onClick="showPopUpPassword"
         app:layout_constraintBottom_toBottomOf="@id/password"
         app:layout_constraintStart_toEndOf="@id/guiline_85_ver"

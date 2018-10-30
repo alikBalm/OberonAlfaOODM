@@ -21,6 +21,7 @@ public final class R {
     public static final int abc_slide_out_top=0x7f010009;
     public static final int abc_tooltip_enter=0x7f01000a;
     public static final int abc_tooltip_exit=0x7f01000b;
+    public static final int rotate=0x7f01000c;
   }
   public static final class array {
     public static final int file_type_to_add=0x7f020000;
@@ -2963,18 +2964,19 @@ public final class R {
     public static final int share_folder=0x7f070080;
     public static final int spam=0x7f070081;
     public static final int sync2=0x7f070082;
-    public static final int sync2_red=0x7f070083;
-    public static final int tooltip_frame_dark=0x7f070084;
-    public static final int tooltip_frame_light=0x7f070085;
-    public static final int trash=0x7f070086;
-    public static final int trash_folder=0x7f070087;
-    public static final int txt=0x7f070088;
-    public static final int unknown=0x7f070089;
-    public static final int upload_file=0x7f07008a;
-    public static final int upload_file_red=0x7f07008b;
-    public static final int wiki=0x7f07008c;
-    public static final int xls=0x7f07008d;
-    public static final int zip=0x7f07008e;
+    public static final int sync2_green=0x7f070083;
+    public static final int sync2_red=0x7f070084;
+    public static final int tooltip_frame_dark=0x7f070085;
+    public static final int tooltip_frame_light=0x7f070086;
+    public static final int trash=0x7f070087;
+    public static final int trash_folder=0x7f070088;
+    public static final int txt=0x7f070089;
+    public static final int unknown=0x7f07008a;
+    public static final int upload_file=0x7f07008b;
+    public static final int upload_file_red=0x7f07008c;
+    public static final int wiki=0x7f07008d;
+    public static final int xls=0x7f07008e;
+    public static final int zip=0x7f07008f;
   }
   public static final class id {
     public static final int ALT=0x7f080000;
