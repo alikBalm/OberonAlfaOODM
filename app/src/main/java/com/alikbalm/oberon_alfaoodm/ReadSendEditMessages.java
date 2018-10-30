@@ -33,7 +33,7 @@ public class ReadSendEditMessages extends AppCompatActivity {
     EditText from_edit_text, to_edit_text, subject_edit_text, message_edit_text;
 
     Integer messageIdToWork, messageFolderId;
-    String messageFrom, messageTo, messageSubject, messageHTML, messageSignature;
+    String messageFrom, messageTo, messageSubject, messageHTML, messageSignature, toContactEmail;
 
     Boolean newMessage;
 
@@ -60,12 +60,9 @@ public class ReadSendEditMessages extends AppCompatActivity {
         messageIdToWork = getIntent().getIntExtra("messageId",0);
         messageFolderId = getIntent().getIntExtra("folderId",0);
         newMessage = getIntent().getBooleanExtra("newMessage",false);
+        toContactEmail = getIntent().getStringExtra("to");
 
-        if (newMessage){
-            sendMessageLayout.setVisibility(View.VISIBLE);
-            viewMessageLayout.setVisibility(View.INVISIBLE);
 
-        }
 
         readMessage = (WebView) findViewById(R.id.readMessage);
 
@@ -86,6 +83,7 @@ public class ReadSendEditMessages extends AppCompatActivity {
         delete = (ImageView) findViewById(R.id.delete);
         block = (ImageView) findViewById(R.id.block);
         send_message_image = (ImageView) findViewById(R.id.send_message_image);
+
 
 
         // код ниже это на будущее когда буду думать о том как вставлять подпись в письмо
@@ -165,8 +163,15 @@ public class ReadSendEditMessages extends AppCompatActivity {
         getSupportActionBar().hide();
         Log.i("messageId",String.valueOf(messageIdToWork));
         Log.i("folderId",String.valueOf(messageFolderId));
-        readMessageOnClick(messageIdToWork);
-
+        if (newMessage){
+            sendMessageLayout.setVisibility(View.VISIBLE);
+            viewMessageLayout.setVisibility(View.INVISIBLE);
+            if (toContactEmail!=null) {
+                to_edit_text.setText(toContactEmail);
+            }
+        }else {
+            readMessageOnClick(messageIdToWork);
+        }
 
     }
 

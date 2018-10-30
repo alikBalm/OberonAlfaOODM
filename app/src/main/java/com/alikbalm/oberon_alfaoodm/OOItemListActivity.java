@@ -80,6 +80,7 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
     ArrayList<String> itemString;
     ArrayList<Integer> itemPng;
     ArrayList<Integer> itemId;
+    ArrayList<String> itemStringId;
     ArrayList<Boolean> itemTypeFolder;
 
     // это нужно для хождения по папкам в документах, потому как там могут быть пустые папки
@@ -345,9 +346,11 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
                             initializeArraylistsForListView(getListIndex());
 
                             break;
-                        case "Контакты":
+                        case "Люди":
 
                             // отрисовка списка контактов
+                            MainActivity.listIdStack.add(MainActivity.hardcoredListId.getRoot_contacts());
+                            initializeArraylistsForListView(getListIndex());
                             /*
                             addListIdAndPutSyncTime(9);
                             initializeArraylistsForListView(getListIndex());
@@ -380,6 +383,12 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
                     // странчки вики
 
                     openWikiPageFromList(itemString.get(position));
+
+                } else if (getListIndex() == MainActivity.hardcoredListId.getRoot_contacts()) {
+                    // странчки контактов
+
+                    openContactUrl(itemStringId.get(position));
+
 
                 }  else if (getListIndex() >= MainActivity.hardcoredListId.getDocuments_mydoc() && getListIndex() <= MainActivity.hardcoredListId.getDocuments_trash()) {
                     // хождение по папкам документов и открытие файлов
@@ -458,6 +467,14 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
         Intent intent = new Intent(getApplicationContext(),DocFilesReadWriteSaveDownload.class);
         intent.putExtra("wikiPageName",pageName);
         startActivity(intent);
+    }
+
+    void openContactUrl(String contactId){
+
+        Intent intent = new Intent(getApplicationContext(),DocFilesReadWriteSaveDownload.class);
+        intent.putExtra("contactId",contactId);
+        startActivity(intent);
+
     }
 
     void openDocumentFromList(Integer position) {
@@ -966,7 +983,9 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
                     JSONObject respo = new JSONObject(response.body().string());
                     JSONArray resp = respo.getJSONArray("response");
                     if (wikiPagesList.size() < resp.length()) {
-
+                        // тут нужно добавить очистку бд либо обновление значений, т.к. пока если количество изменится
+                        // просто произойдёт добавление всех значений и многое продублируется
+                        WikiPages.deleteAll(WikiPages.class);
                         for (int i = 0; i < resp.length(); i++) {
                             JSONObject wikiPage = resp.getJSONObject(i);
                             String name = wikiPage.getString("name");
@@ -994,6 +1013,63 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
         });
     }
 
+    void getContactsList(){
+        final List<ContactsOO> contactsOOList = ContactsOO.listAll(ContactsOO.class);
+
+        Call<ResponseBody> getContacts = service.getContactsOO(MainActivity.currentUser.token);
+        getContacts.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    JSONObject respo = new JSONObject(response.body().string());
+                    //Log.i("!!! respo", respo.toString());
+                    JSONArray resp = respo.getJSONArray("response");
+                    if (contactsOOList.size()<resp.length()) {
+                        // тут нужно добавить очистку бд либо обновление значений, т.к. пока если количество изменится
+                        // просто произойдёт добавление всех значений и многое продублируется
+                        ContactsOO.deleteAll(ContactsOO.class);
+                        for (int i = 0; i < resp.length();i++){
+                            JSONObject contact = resp.getJSONObject(i);
+
+                            String contactId = contact.getString("id"),
+                                    userName = contact.getString("userName"),
+                                    firstName = contact.getString("firstName"),
+                                    lastName = contact.getString("lastName"),
+                                    email = contact.getString("email"),
+                                    department = contact.getString("department"),
+                                    avatar = contact.getString("avatar"),
+                                    profileUrl = contact.getString("profileUrl");
+                            Log.i("!!! id", contactId);
+                            Log.i("!!! userName", userName);
+                            Log.i("!!! firstName", firstName);
+                            Log.i("!!! lastName", lastName);
+                            Log.i("!!! email", email);
+                            Log.i("!!! department", department);
+                            Log.i("!!! avatar", avatar);
+                            Log.i("!!! profileUrl", profileUrl);
+                            new ContactsOO(contactId,userName,firstName,lastName,email,department,avatar,profileUrl).save();
+                        }
+                        initializeArraylistsForListView(getListIndex());
+                    } else {
+                        initializeArraylistsForListView(getListIndex());
+                    }
+                } catch (JSONException e) {
+                    Log.i("!!! JSONException", "getContactsList " + e.getMessage());
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    Log.i("!!! IOException", "getContactsList " + e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.i("!!! onFailure", "getContactsList " + t.getMessage());
+            }
+        });
+
+    }
+
     void initializeArraylistsForListView(Integer indexofList) {
 
         lastSyncData.setText(lastSyncTimeDate(getListIndex()));
@@ -1011,6 +1087,7 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
         } else if (indexofList == MainActivity.hardcoredListId.getRoot_contacts()) {
 
             // здесь построение списка контактов
+            initializeRootContactsScreen();
 
         } else if (indexofList == MainActivity.hardcoredListId.getRoot_wiki()) {
 
@@ -1121,6 +1198,9 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
         } else if (getListIndex() == MainActivity.hardcoredListId.getRoot_wiki()) {
             // википедия
             getWikiPagesList();
+        } else if (getListIndex() == MainActivity.hardcoredListId.getRoot_contacts()) {
+            // википедия
+            getContactsList();
         } else {
             // синхро внутри папок документов
             GetFolderFoldersAndFilesByListId(getListIndex());
@@ -1296,6 +1376,24 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
             }
         }
 
+    }
+    void initializeRootContactsScreen(){
+        itemString = new ArrayList<>();
+        itemPng = new ArrayList<>();
+        itemStringId = new ArrayList<>();
+
+        List<ContactsOO> contactsOOList = ContactsOO.listAll(ContactsOO.class);
+        if (contactsOOList == null || contactsOOList.size() < 1) {
+            syncScreenWithOO();
+        } else {
+            // выполняем цикл и заполняем данные в список
+            for (ContactsOO contact :
+                    contactsOOList) {
+                itemString.add(contact.lastName + " " + contact.firstName);
+                itemPng.add(R.drawable.contact_png);
+                itemStringId.add(contact.contactId);
+            }
+        }
     }
 
     public void showPopUpCreate(View view) {

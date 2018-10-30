@@ -440,6 +440,8 @@ public class MainActivity extends AppCompatActivity {
         MailMessage.deleteAll(MailMessage.class);
         DocumentFolders.deleteAll(DocumentFolders.class);
         DocumentsFiles.deleteAll(DocumentsFiles.class);
+        WikiPages.deleteAll(WikiPages.class);
+        ContactsOO.deleteAll(ContactsOO.class);
         listIdStack = null;
         listIdDateStack = null;
 

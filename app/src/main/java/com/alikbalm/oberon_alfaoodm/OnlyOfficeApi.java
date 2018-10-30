@@ -104,4 +104,15 @@ public interface OnlyOfficeApi {
             @Header("Authorization") String token,
             @Path("name") String wikiPageName
     );
+
+    @GET("api/2.0/people")
+    Call<ResponseBody> getContactsOO(
+            @Header("Authorization") String token
+    );
+
+    @GET("{avatar}")
+    Call<ResponseBody> getContactsAvatar(
+            @Header("Authorization") String token,
+            @Path("avatar") String avatar
+    );
 }

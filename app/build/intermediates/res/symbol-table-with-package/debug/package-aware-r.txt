@@ -624,6 +624,7 @@ drawable add
 drawable add_doc
 drawable block
 drawable common_folder
+drawable contact_png
 drawable contacts
 drawable delete
 drawable doc
@@ -724,6 +725,7 @@ id clip_horizontal
 id clip_vertical
 id collapseActionView
 id connect
+id contactImage
 id contentPanel
 id createButton
 id createDocument
@@ -744,12 +746,14 @@ id disableHome
 id docWebView
 id e_mail
 id edit_query
+id email
 id end
 id expand_activities_button
 id expanded_menu
 id fill
 id fill_horizontal
 id fill_vertical
+id fio
 id forever
 id forward
 id from
@@ -762,6 +766,7 @@ id guiline_80_hor
 id guiline_85_ver
 id home
 id homeAsUp
+id hor_40
 id hor_guid_10
 id hor_guid_90
 id icon
@@ -802,6 +807,7 @@ id notification_main_column
 id notification_main_column_container
 id packed
 id parent
+id parent1
 id parentPanel
 id password
 id percent
@@ -875,6 +881,7 @@ id uniform
 id up
 id uploadFileImage
 id useLogo
+id ver_30
 id ver_guid_90
 id viewMessageLayout
 id withText

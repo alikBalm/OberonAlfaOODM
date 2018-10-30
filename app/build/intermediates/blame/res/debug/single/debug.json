@@ -212,6 +212,10 @@
         "source": "/home/OBERON/alik.balm/.gradle/caches/transforms-1/files-1.1/appcompat-v7-27.1.1.aar/932bcb1dd70000fb98aea42cc6b5f47d/res/drawable-ldrtl-xhdpi-v17/abc_spinner_mtrl_am_alpha.9.png"
     },
     {
+        "merged": "/home/OBERON/alik.balm/AndroidStudioProjects/1/OberonAlfaOODM/app/build/intermediates/res/merged/debug/drawable_contact_png.png.flat",
+        "source": "/home/OBERON/alik.balm/AndroidStudioProjects/1/OberonAlfaOODM/app/src/main/res/drawable/contact_png.png"
+    },
+    {
         "merged": "/home/OBERON/alik.balm/AndroidStudioProjects/1/OberonAlfaOODM/app/build/intermediates/res/merged/debug/drawable-xhdpi-v4_abc_ic_menu_cut_mtrl_alpha.png.flat",
         "source": "/home/OBERON/alik.balm/.gradle/caches/transforms-1/files-1.1/appcompat-v7-27.1.1.aar/932bcb1dd70000fb98aea42cc6b5f47d/res/drawable-xhdpi-v4/abc_ic_menu_cut_mtrl_alpha.png"
     },
