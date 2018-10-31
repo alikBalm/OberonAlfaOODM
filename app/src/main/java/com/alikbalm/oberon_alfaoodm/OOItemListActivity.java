@@ -121,7 +121,10 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
         } else if (getListIndex() == 0) {
 
             //Log.i("111 List Index onBack" , String.valueOf(getListIndex()));
-            MainActivity.currentUser = null;
+
+            //service = null;
+            //retrofit = null;
+            //MainActivity.currentUser = null;
             MainActivity.clearDBOnBackPressed();
             super.onBackPressed();
 
@@ -242,7 +245,7 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
             }
         });
 
-        Log.i("111 token", MainActivity.currentUser.token);
+        //Log.i("111 token", MainActivity.currentUser.token);
 
         syncImage = (ImageView) findViewById(R.id.syncImage);
 
@@ -264,8 +267,8 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
             public void onClick(View view) {
 
 
-                MainActivity.currentUser = null;
-                MainActivity.listIdStack = new ArrayList<>();
+                //MainActivity.currentUser = null;
+                //MainActivity.listIdStack = new ArrayList<>();
                 OOItemListActivity.super.onBackPressed();
 
 
@@ -464,8 +467,6 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
     }
 
     void openWikiPageFromList(String pageName) {
-        DocFilesReadWriteSaveDownload test = new DocFilesReadWriteSaveDownload();
-        test.openWikiPageContent("sdfsdf");
         Intent intent = new Intent(getApplicationContext(),DocFilesReadWriteSaveDownload.class);
         intent.putExtra("wikiPageName",pageName);
         startActivity(intent);

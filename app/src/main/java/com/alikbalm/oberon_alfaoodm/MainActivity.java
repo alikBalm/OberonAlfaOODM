@@ -2,6 +2,8 @@ package com.alikbalm.oberon_alfaoodm;
 
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -17,6 +19,9 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.Toast;
+
+import com.orm.query.Condition;
+import com.orm.query.Select;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -126,108 +131,189 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
         animation.setAnimationListener(MainActivity.this);
 
 
-
-
         connect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                connect.setVisibility(View.INVISIBLE);
-                syncImage.startAnimation(animation);
+                //startConnectingAnimation();
 
-                if (currentUser != null) {
-                    listIdDateStack = new HashMap<>();
-
-                    listIdStack = new ArrayList<>();
-
-                    listIdStack.add(hardcoredListId.getRoot_screen());
-
-                    // чистим поля ввода чтоб при возврате на экран не создавался дубликат пользователя
-                    server.setText("");
-                    e_mail.setText("");
-                    password.setText("");
-                    logedUsersList = LogedUsers.listAll(LogedUsers.class);
-
-                    connect.setVisibility(View.VISIBLE);
-                    syncImage.clearAnimation();
-                    syncImage.setVisibility(View.INVISIBLE);
+                /*if (currentUser != null) {
+                    if (listIdStack!=null) {
+                        currentUser = null;
+                    } else {
+                        goToRootListScreenIfCurrentUserNotNull();
+                    }*/
 
 
-                    Intent intent = new Intent(getApplicationContext(), OOItemListActivity.class);
-                    startActivity(intent);
+                startConnectingAnimation();
 
+                String serverFromInput = server.getText().toString();
+
+                serverUrl = serverFromInput.contains("https://") ?
+                        serverFromInput :
+                        "https://" + serverFromInput;
+                serverUrl = serverUrl.endsWith("/") ?
+                        serverUrl :
+                        serverUrl + "/";
+
+                username = e_mail.getText().toString();
+                passwordText = password.getText().toString();
+
+                Log.i("!!! Login Pressed", serverUrl);
+                Log.i("!!! Login Pressed", username);
+                Log.i("!!! Login Pressed", passwordText);
+
+
+                if (serverUrl.equals("https://")) {
+
+                    Toast.makeText(MainActivity.this, "Server are required", Toast.LENGTH_SHORT).show();
+                    stopConnectingAnimation();
+                } else if (username == null || username.equals("")) {
+                    Toast.makeText(MainActivity.this, "Username are required", Toast.LENGTH_SHORT).show();
+                    stopConnectingAnimation();
+                } else if (passwordText == null || passwordText.equals("")) {
+                    Toast.makeText(MainActivity.this, "Password are required", Toast.LENGTH_SHORT).show();
+                    stopConnectingAnimation();
                 } else {
 
-                    String serverFromInput = server.getText().toString();
 
-                    serverUrl = serverFromInput.contains("https://") ?
-                            serverFromInput:
-                            "https://" + serverFromInput;
-                    serverUrl = serverFromInput.endsWith("/") ?
-                            serverFromInput:
-                            serverFromInput + "/";
+                    // здесь меняем с volley на retrofit
 
-                    username = e_mail.getText().toString();
-                    passwordText = password.getText().toString();
+                    // два нижних метода нужно перенести в
+                    // метод checkForUserInLocalDB
+                    // или нет, нужно над логикой подумать
+                    checkForUserInLocalDB(serverUrl, username, passwordText);
 
-
-                    if (serverUrl == null || serverUrl.equals("https:///")) {
-
-                        Toast.makeText(MainActivity.this, "Server are required", Toast.LENGTH_SHORT).show();
-                        connect.setVisibility(View.VISIBLE);
-                        syncImage.clearAnimation();
-                        syncImage.setVisibility(View.INVISIBLE);
-                    } else if (username == null || username.equals("")) {
-                        Toast.makeText(MainActivity.this, "Username are required", Toast.LENGTH_SHORT).show();
-                        connect.setVisibility(View.VISIBLE);
-                        syncImage.clearAnimation();
-                        syncImage.setVisibility(View.INVISIBLE);
-                    } else if (passwordText == null || passwordText.equals("")) {
-                        Toast.makeText(MainActivity.this, "Password are required", Toast.LENGTH_SHORT).show();
-                        connect.setVisibility(View.VISIBLE);
-                        syncImage.clearAnimation();
-                        syncImage.setVisibility(View.INVISIBLE);
-                    } else {
-
-
-                        connect.setVisibility(View.INVISIBLE);
-                        syncImage.setVisibility(View.VISIBLE);
-                        // здесь меняем с volley на retrofit
-
-                        // два нижних метода нужно перенести в
-                        // метод checkForUserInLocalDB
-                        // или нет нужно над логикой подумать
-                        initializeApiService();
-
-                        getTokenFromServer();
-
-
-
-                    }
 
                 }
+
+
             }
         });
 
     }
 
     void checkForUserInLocalDB(String serverUrl, String username, String passwordText) {
-        List<LogedUsers> checkList = LogedUsers.listAll(LogedUsers.class);
-        for (LogedUsers user :
+
+        // сначала проверяем есть ли такой сервер в лок бд
+
+        List<LogedUsers> serverCheckList = Select.from(LogedUsers.class)
+                .where(Condition.prop("server").eq(serverUrl))
+                .list();
+        if (serverCheckList.size() < 1) {
+            // создание нового пользователя потому как нет такого сервера
+            // т.е. отправка запроса на сср
+
+            initializeApiService();
+            getTokenFromServer();
+
+        } else {
+            final List<LogedUsers> serverAndUsernameCheckList = Select.from(LogedUsers.class)
+                    .where(Condition.prop("server").eq(serverUrl),
+                            Condition.prop("user_name").eq(username))
+                    .list();
+            if (serverAndUsernameCheckList.size() < 1) {
+                // создание нового пользователя потому как с таким сервером нет такого пользователя
+                // т.е. отправка запроса на сср
+
+                initializeApiService();
+                getTokenFromServer();
+
+            } else {
+                List<LogedUsers> serverAndUsernameAndPasswordCheckList = Select.from(LogedUsers.class)
+                        .where(Condition.prop("server").eq(serverUrl),
+                                Condition.prop("user_name").eq(username),
+                                Condition.prop("password").eq(passwordText))
+                        .list();
+                if (serverAndUsernameAndPasswordCheckList.size() < 1) {
+                    // здесь код обновления пароля пользователя который есть в лок бд
+
+                    new AlertDialog.Builder(MainActivity.this)
+                            .setIcon(R.drawable.ic_launcher_background)
+                            .setTitle("?")
+                            .setMessage("Password for pair server-username in local DB does not match to entered one. Do you want to update it? \n" +
+                                    "If No, password from local DB will be used!")
+                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    // здесь обновляем пароль для пользователя
+                                    // и следовательно нужно запросить новый токен, и возможно новый
+                                    // почтовый адресс так что лучше будет удалить пользователя из базы и
+                                    // посласть новый запрос
+                                    serverAndUsernameCheckList.get(0).delete();
+
+                                    initializeApiService();
+
+                                    getTokenFromServer();
+                                }
+                            })
+                            .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    currentUser = serverAndUsernameCheckList.get(0);
+
+                                    goToRootListScreenIfCurrentUserNotNull();
+                                }
+                            })
+                            .show();
+
+                } else {
+                    // здесь использование пользователя который в базе
+                    currentUser = serverAndUsernameAndPasswordCheckList.get(0);
+
+                    goToRootListScreenIfCurrentUserNotNull();
+                }
+            }
+        }
+
+        // думаю нужны два временных массива с серверами и логинами из баз
+        /*List<LogedUsers> checkList = LogedUsers.listAll(LogedUsers.class);
+        for (final LogedUsers user :
                 checkList) {
-            if (serverUrl.equals(user.server)) {
-                if (username.equals(user.userName)) {
-                    if (passwordText.equals(user.password)){
-                        // здесь выводим алерт диалог
-                        // о том что в бд есть уже пользователь с такими сервером логином и паролем
-                        // и вопрос использовать его или нет
+            if (user.server.equals(serverUrl)) {
+                if (user.userName.equals(username)) {
+                    if (user.password.equals(passwordText)){
+                        // если есть в базе такой пользователь то запоминаем его в кеше и переходим на корневой список
+                        currentUser = user;
+                        goToRootListScreenIfCurrentUserNotNull();
+
                     } else {
                         // здесь код если не совпадают пароли
                         // нужно добавить алерт диалог с предупреждением что пароль в базе не совпадает с
                         // введеным паролем, и вопрос изменить пароль в базе либо вы ошиблись при вводе?
+                        new AlertDialog.Builder(MainActivity.this)
+                                .setIcon(R.drawable.ic_launcher_background)
+                                .setTitle("?")
+                                .setMessage("Password for pair server-username in local DB does not match to entered one. Do you want to update it? \n" +
+                                        "If No, password from local DB will be used!")
+                                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        // здесь обновляем пароль для пользователя
+                                        // и следовательно нужно запросить новый токен, и возможно новый
+                                        // почтовый адресс так что лучше будет удалить пользователя из базы и
+                                        // посласть новый запрос
+                                        user.delete();
+
+                                        initializeApiService();
+
+                                        getTokenFromServer();
+                                    }
+                                })
+                                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        currentUser = user;
+                                    }
+                                })
+                                .show();
                     }
+                } else {
+                    // здесь код если в этом сервере не такого пользователя
                 }
+            } else {
+                // здесь код если нет такого сервера
             }
-        }
+        }*/
     }
 
     // менюшку нужно доработать, а именно добавить возможность вводить новый сервер
@@ -241,6 +327,7 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
 
     public void showPopUpServer(View view) {
 
+        getLoggedUserListTempForPopUpMenu();
 
         PopupMenu popup = new PopupMenu(this, view);
 
@@ -265,16 +352,6 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
 
                 server.setText(selectedItem);
 
-                List<LogedUsers> tempList = new ArrayList<>();
-                for (LogedUsers user :
-                        logedUsersList) {
-                    if (user.server.equals(selectedItem)) {
-
-                        tempList.add(user);
-                    }
-                }
-                logedUsersList = tempList;
-
                 return true;
 
             }
@@ -286,6 +363,7 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
     }
 
     public void showPopUpEmail(View view) {
+        getLoggedUserListTempForPopUpMenu();
 
         PopupMenu popup = new PopupMenu(this, view);
 
@@ -310,7 +388,7 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
 
                 e_mail.setText(selectedItem);
 
-                List<LogedUsers> tempList = new ArrayList<>();
+
 
                 serverUrl = server.getText().toString();
                 username = e_mail.getText().toString();
@@ -322,15 +400,12 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
                         if (user.server.equals(serverUrl)) {
 
                             if (user.userName.equals(username)) {
-
                                 password.setText(user.password);
-                                currentUser = user;
-
                             }
                         }
                     }
                 }
-                logedUsersList = tempList;
+
 
 
                 return true;
@@ -339,6 +414,32 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
         MenuInflater inflater = popup.getMenuInflater();
         inflater.inflate(R.menu.server_menu, popup.getMenu());
         popup.show();
+
+    }
+
+    void getLoggedUserListTempForPopUpMenu(){
+        String
+                serverAdress = server.getText().toString(),
+                serverUsername = e_mail.getText().toString();
+        if (serverAdress.equals("") ){
+            // сервер -
+            if (serverUsername.equals("")){
+                // пользователь -
+                logedUsersList = LogedUsers.listAll(LogedUsers.class);
+            } else {
+                // пользователь +
+                logedUsersList = Select.from(LogedUsers.class).where(Condition.prop("user_name").eq(serverUsername)).list();
+            }
+        } else {
+            //сервер +
+            if (serverUsername.equals("")){
+                // пользователь -
+                logedUsersList = Select.from(LogedUsers.class).where(Condition.prop("server").eq(serverAdress)).list();
+            } else {
+                // пользователь +
+                logedUsersList = Select.from(LogedUsers.class).where(Condition.prop("server").eq(serverAdress),Condition.prop("user_name").eq(serverUsername)).list();
+            }
+        }
 
     }
 
@@ -434,34 +535,29 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
 
                 } catch (JSONException e) {
 
+                    Log.i("!!! JSONException", "getTokenFromServer " + e.getMessage());
                     e.printStackTrace();
-                    connect.setVisibility(View.VISIBLE);
-                    syncImage.clearAnimation();
-                    syncImage.setVisibility(View.INVISIBLE);
+                    stopConnectingAnimation();
 
                 } catch (IOException e) {
 
+                    Log.i("!!! IOException", "getTokenFromServer " + e.getMessage());
                     e.printStackTrace();
-                    connect.setVisibility(View.VISIBLE);
-                    syncImage.clearAnimation();
-                    syncImage.setVisibility(View.INVISIBLE);
+                    stopConnectingAnimation();
 
                 } catch (NullPointerException e) {
+                    Log.i("!!! NullPointerExceptio", "getTokenFromServer " + e.getMessage());
                     e.printStackTrace();
                     Toast.makeText(MainActivity.this, "No answer from server! Check your Username or Password", Toast.LENGTH_SHORT).show();
-                    connect.setVisibility(View.VISIBLE);
-                    syncImage.clearAnimation();
-                    syncImage.setVisibility(View.INVISIBLE);
+                    stopConnectingAnimation();
                 }
             }
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
 
-                Log.i("!!! Error", t.getMessage());
+                Log.i("!!! onFailure", "getTokenFromServer " + t.getMessage());
                 Toast.makeText(MainActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
-                connect.setVisibility(View.VISIBLE);
-                syncImage.clearAnimation();
-                syncImage.setVisibility(View.INVISIBLE);
+                stopConnectingAnimation();
             }
         });
     }
@@ -491,39 +587,26 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
 
                         currentUser = new LogedUsers(serverUrl, username, passwordText, token, userEmail);
                         currentUser.save();
+
                     }
 
-                    listIdDateStack = new HashMap<>();
-
-                    listIdStack = new ArrayList<>();
-
-                    listIdStack.add(hardcoredListId.getRoot_screen());
-
-                    // чистим поля ввода чтоб при возврате на экран не создавался дубликат пользователя
-                    server.setText("");
-                    e_mail.setText("");
-                    password.setText("");
-
-                    // убираем анимацию
-                    connect.setVisibility(View.VISIBLE);
-                    syncImage.clearAnimation();
-                    syncImage.setVisibility(View.INVISIBLE);
-                    // конец уборки анимации можно перенести в отдельный метод но пока и так сойдёт)))))
-
-                    Intent intent = new Intent(getApplicationContext(), OOItemListActivity.class);
-                    startActivity(intent);
+                    goToRootListScreenIfCurrentUserNotNull();
 
                 } catch (JSONException e) {
+                    Log.i("!!! JSONException","getEmailByToken " + e.getMessage());
                     e.printStackTrace();
+                    stopConnectingAnimation();
                 } catch (IOException e) {
+                    Log.i("!!! IOException","getEmailByToken " + e.getMessage());
                     e.printStackTrace();
+                    stopConnectingAnimation();
                 }
             }
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Log.i("!!! onFailure", t.getMessage());
-
+                Log.i("!!! onFailure","getEmailByToken " + t.getMessage());
+                stopConnectingAnimation();
             }
         });
 
@@ -542,9 +625,39 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
         DocumentsFiles.deleteAll(DocumentsFiles.class);
         WikiPages.deleteAll(WikiPages.class);
         ContactsOO.deleteAll(ContactsOO.class);
-        listIdStack = null;
-        listIdDateStack = null;
+        //listIdStack = null;
+        //listIdDateStack = null;
 
+    }
+
+    void startConnectingAnimation(){ //!!
+        connect.setVisibility(View.INVISIBLE);
+        syncImage.startAnimation(animation);
+    }
+    void stopConnectingAnimation(){ //!!
+        connect.setVisibility(View.VISIBLE);
+        syncImage.clearAnimation();
+        syncImage.setVisibility(View.INVISIBLE);
+    }
+
+    void goToRootListScreenIfCurrentUserNotNull(){
+        listIdDateStack = new HashMap<>();
+
+        listIdStack = new ArrayList<>();
+
+        listIdStack.add(hardcoredListId.getRoot_screen());
+
+        // чистим поля ввода чтоб при возврате на экран не создавался дубликат пользователя
+        server.setText("");
+        e_mail.setText("");
+        password.setText("");
+        logedUsersList = LogedUsers.listAll(LogedUsers.class);
+
+        stopConnectingAnimation();
+
+
+        Intent intent = new Intent(getApplicationContext(), OOItemListActivity.class);
+        startActivity(intent);
     }
 
 
