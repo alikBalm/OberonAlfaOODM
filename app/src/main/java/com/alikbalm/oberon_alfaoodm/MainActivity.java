@@ -37,6 +37,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -47,7 +48,7 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
 
     Button connect;
 
-    String serverUrl, username, passwordText, token, userEmail;
+    String serverUrl, username, passwordText, token, userEmail, userMailSignature;
 
     static LogedUsers currentUser;
 
@@ -228,8 +229,8 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
                     // здесь код обновления пароля пользователя который есть в лок бд
 
                     new AlertDialog.Builder(MainActivity.this)
-                            .setIcon(R.drawable.ic_launcher_background)
-                            .setTitle("?")
+                            .setIcon(R.drawable.question)
+                            .setTitle("Password changed?")
                             .setMessage("Password for pair server-username in local DB does not match to entered one. Do you want to update it? \n" +
                                     "If No, password from local DB will be used!")
                             .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -315,15 +316,6 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
             }
         }*/
     }
-
-    // менюшку нужно доработать, а именно добавить возможность вводить новый сервер
-    // и записывать его в базу
-    // первым делом надо это сделать потому что нужно перес\установить приложение, а для этого нужно иметь возможность ввести
-    // сервер логин и пароль для подключения
-
-    // здесь из трёх нижних нужно сделать один метод, но это в дальнейшем, а пока довольствуйтесь тем что есть))))
-
-    // нужно добавить кнопку для очитски полей ввода и также сброса logedUsersList на первоначальный
 
     public void showPopUpServer(View view) {
 
@@ -443,64 +435,6 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
 
     }
 
-    // это нужно поменять то бишь он вообще не нужен,
-    // я имею в виду нижний
-
-    public void showPopUpPassword(View view) {
-
-        PopupMenu popup = new PopupMenu(this, view);
-
-        if (logedUsersList.size() < 1 || logedUsersList == null) {
-
-            // ничего не делаем так как доставать не из чего
-
-        } else {
-
-            serverUrl = server.getText().toString();
-            username = e_mail.getText().toString();
-            if (serverUrl == null || serverUrl.equals("")) {
-
-                Toast.makeText(MainActivity.this, "Server are required", Toast.LENGTH_SHORT).show();
-            } else if (username == null || username.equals("")) {
-                Toast.makeText(MainActivity.this, "Username are required", Toast.LENGTH_SHORT).show();
-            } else {
-
-                for (LogedUsers user :
-                        logedUsersList) {
-                    popup.getMenu().add(user.userName + " on "
-                            + user.server);
-                }
-            }
-
-        }
-
-
-        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem menuItem) {
-                //String selectedItem = menuItem.getTitle().toString();
-                for (LogedUsers user :
-                        logedUsersList) {
-                    if (user.server.equals(serverUrl)) {
-
-                        if (user.userName.equals(username)) {
-
-                            password.setText(user.password);
-                            currentUser = user;
-
-                        }
-                    }
-                }
-
-                return true;
-            }
-        });
-        MenuInflater inflater = popup.getMenuInflater();
-        inflater.inflate(R.menu.server_menu, popup.getMenu());
-        popup.show();
-
-    }
-
     void initializeApiService(){
 
         OkHttpClient client = new OkHttpClient.Builder()
@@ -522,7 +456,7 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
 
         getToken.enqueue(new Callback<ResponseBody>() {
             @Override
-            public void onResponse(Call<ResponseBody> call, retrofit2.Response<ResponseBody> response) {
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
 
                 try {
                     JSONObject resp = new JSONObject(response.body().string());
@@ -568,24 +502,33 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
 
         getEmail.enqueue(new Callback<ResponseBody>() {
             @Override
-            public void onResponse(Call<ResponseBody> call, retrofit2.Response<ResponseBody> response) {
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
 
                 try {
                     JSONObject resp = new JSONObject(response.body().string());
                     JSONArray r = resp.getJSONArray("response");
                     if (r.length()<1) {
-                        currentUser = new LogedUsers(serverUrl, username, passwordText, token, "default.mail@default.default");
+                        currentUser = new LogedUsers(serverUrl, username, passwordText, token, "default.mail@default.default","");
                         currentUser.save();
                     } else {
                         JSONObject account = r.getJSONObject(0);
                         userEmail = account.getString("email");
 
 
-                        //! кстати отсюда можно и подпись доставать  также как и почту signature
+
+                        //JSONObject signature = account.getJSONObject("signature");
+                        userMailSignature = /*signature.getString("html");//*/"Message Send From \n   Oberon-AlfaOODM\n       Android App";
+
+
+                        //! теперь у нас есть подпись для почты, для отправки писем, но естьнюанс
+                        // если у человека несколько почтовых аккаунтов, то возьмётся первый попавшийся,
+                        // а нужно переделать чтоб выходил какой нибудь спискок почтовых адресов
+                        // и уже при нажатии на один из них он записывался в базу
+                        // также нужно добавить здесь на главном экране кнопку по смене почтвого ящика в локальной бд
 
                         Log.i("!!! email", userEmail);
 
-                        currentUser = new LogedUsers(serverUrl, username, passwordText, token, userEmail);
+                        currentUser = new LogedUsers(serverUrl, username, passwordText, token, userEmail, userMailSignature);
                         currentUser.save();
 
                     }
@@ -676,3 +619,23 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
 
     }
 }
+ /*
+
+ мусор из xml
+
+     <ImageView
+        android:id="@+id/logedUsersPasswordImage"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:src="@drawable/loged_users"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:visibility="invisible"
+        android:onClick="showPopUpPassword"
+        app:layout_constraintBottom_toBottomOf="@id/password"
+        app:layout_constraintStart_toEndOf="@id/guiline_85_ver"
+        app:layout_constraintEnd_toEndOf="@id/password"
+        app:layout_constraintTop_toTopOf="@id/password"/>
+  */

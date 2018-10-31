@@ -663,6 +663,7 @@ drawable pdf
 drawable png
 drawable ppt
 drawable projects_folder
+drawable question
 drawable reply
 drawable send_message
 drawable share_folder
@@ -794,7 +795,6 @@ id list
 id listMode
 id list_item
 id logedUsersImage
-id logedUsersPasswordImage
 id logedUsersUsernameImage
 id logoutImage
 id message

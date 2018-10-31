@@ -146,22 +146,6 @@
         app:layout_constraintEnd_toEndOf="@id/e_mail"
         app:layout_constraintTop_toTopOf="@id/e_mail"/>
 
-    <ImageView
-        android:id="@+id/logedUsersPasswordImage"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:src="@drawable/loged_users"
-        android:layout_marginBottom="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:visibility="invisible"
-        android:onClick="showPopUpPassword"
-        app:layout_constraintBottom_toBottomOf="@id/password"
-        app:layout_constraintStart_toEndOf="@id/guiline_85_ver"
-        app:layout_constraintEnd_toEndOf="@id/password"
-        app:layout_constraintTop_toTopOf="@id/password"/>
-
     <android.support.constraint.Guideline
         android:id="@+id/guiline_80_hor"
         android:layout_width="wrap_content"

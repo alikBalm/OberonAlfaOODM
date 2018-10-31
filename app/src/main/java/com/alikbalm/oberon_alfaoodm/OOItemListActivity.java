@@ -640,8 +640,13 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
 
                     List<MailFolders> findNameByFolderId = Select.from(MailFolders.class).where(Condition.prop("folder_id").eq(folderId)).list();
                     Toast.makeText(OOItemListActivity.this, findNameByFolderId.get(0).folderName + " Synchronized", Toast.LENGTH_SHORT).show();
-                    initializeArraylistsForListView(getListIndex());
+                    // ниже проверка записалось ли что нибудь в лок бд
+                    List<MailMessage> messagesCheckList = Select.from(MailMessage.class).where(Condition.prop("folder_id").eq(folderId)).list();
+                    if (messagesCheckList==null || messagesCheckList.size() < 1) {
 
+                    } else {
+                        initializeArraylistsForListView(getListIndex());
+                    }
                 } catch (JSONException e) {
                     Log.i("!!! JSONException", "getMessagesFromOOByListId " + e.getMessage());
                     e.printStackTrace();
@@ -1281,7 +1286,7 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
 
         List<FolderDocOO> docFolderList = Select.from(FolderDocOO.class).orderBy("order_by").list();
 
-        if (docFolderList.size() < 1 || docFolderList == null ){
+        if (docFolderList == null || docFolderList.size() < 1 ){
 
             syncScreenWithOO();
             initializeDocumentFolders();
@@ -1302,7 +1307,7 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
         itemId = new ArrayList<>();
 
         List<MailMessage> messages = Select.from(MailMessage.class).where(Condition.prop("folder_id").eq(getListIndex())).list();
-        if (messages.size() < 1 || messages == null ){
+        if (messages == null || messages.size() < 1 ){
 
             syncScreenWithOO();
 

@@ -3,6 +3,7 @@ package com.alikbalm.oberon_alfaoodm;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
@@ -20,6 +21,7 @@ import java.io.IOException;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -75,6 +77,7 @@ public class ReadSendEditMessages extends AppCompatActivity {
         to_edit_text = (EditText) findViewById(R.id.to_edit_text);
         subject_edit_text = (EditText) findViewById(R.id.subject_edit_text);
         message_edit_text = (EditText) findViewById(R.id.message_edit_text);
+        message_edit_text.setText("\n\n" + MainActivity.currentUser.mailSignature);
 
         from_edit_text.setText(MainActivity.currentUser.email);
 
@@ -225,20 +228,32 @@ public class ReadSendEditMessages extends AppCompatActivity {
 
         // и в дальнейшем какие нибудь вложения
         // также нужно разобраться как менять подпись если понадобится
+        String body = message_edit_text.getText().toString() + "\n\n" +
+                MainActivity.currentUser.mailSignature;
+
+        String bodyHtml = Html.toHtml( message_edit_text.getText());
+
+        Log.i("!!! body + signarture", "sendMessageReplyOrForward() " + body);
 
         Call<ResponseBody> sendMessageNew = service.sendMessage(
                 MainActivity.currentUser.token,
                 from_edit_text.getText().toString(),
                 to_edit_text.getText().toString(),
                 subject_edit_text.getText().toString(),
-                message_edit_text.getText().toString()
+                bodyHtml
         );
 
         sendMessageNew.enqueue(new Callback<ResponseBody>() {
             @Override
-            public void onResponse(Call<ResponseBody> call, retrofit2.Response<ResponseBody> response) {
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
 
-                try {
+                Log.i("!!! response", "sendMessageReplyOrForward "+ response);
+                ReadSendEditMessages.super.onBackPressed();
+
+                //Toast.makeText(ReadSendEditMessages.this, "Message Send", Toast.LENGTH_SHORT).show();
+                //ReadSendEditMessages.super.onBackPressed();
+
+                /*try {
                     JSONObject respo = new JSONObject(response.body().string());
                     Integer statusCode = respo.getInt("statusCode");
                     if (statusCode==200){
@@ -251,7 +266,7 @@ public class ReadSendEditMessages extends AppCompatActivity {
                 } catch (IOException e) {
                     Log.i("!!! IOException", "sendMessageReplyOrForward " + e.getMessage());
                     e.printStackTrace();
-                }
+                }*/
             }
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
