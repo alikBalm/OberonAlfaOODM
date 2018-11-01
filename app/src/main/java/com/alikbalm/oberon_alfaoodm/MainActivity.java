@@ -451,6 +451,10 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
         service = retrofit.create(OnlyOfficeApi.class);
     }
 
+
+    // этот метод нужно выполнять каждый раз когда логинится пользователь в приожении
+    // так как некоторые сервера (почти все ) выдают токен на очень короткий промежуток времени
+    // и в результате токен не действителен
     void getTokenFromServer(){
         Call<ResponseBody> getToken = service.getToken(username,passwordText);
 

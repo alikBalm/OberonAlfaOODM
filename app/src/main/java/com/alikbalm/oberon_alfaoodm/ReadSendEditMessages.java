@@ -225,16 +225,10 @@ public class ReadSendEditMessages extends AppCompatActivity {
 
     void sendMessageReplyOrForward(){
 
-
         // и в дальнейшем какие нибудь вложения
-        // также нужно разобраться как менять подпись если понадобится
-        //String body = message_edit_text.getText().toString();
-
-        //message_edit_text.setText(body);
 
         String bodyHtml = Html.toHtml( message_edit_text.getText());
 
-        //Log.i("!!! body + signarture", "sendMessageReplyOrForward() " + body);
 
         Call<ResponseBody> sendMessageNew = service.sendMessage(
                 MainActivity.currentUser.token,
@@ -248,6 +242,7 @@ public class ReadSendEditMessages extends AppCompatActivity {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
 
+                // пока так
                 Log.i("!!! response", "sendMessageReplyOrForward "+ response);
                 ReadSendEditMessages.super.onBackPressed();
 
