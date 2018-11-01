@@ -1689,7 +1689,7 @@ public final class R {
      * <tr><td>barrier</td><td>2</td><td></td></tr>
      * <tr><td>chains</td><td>4</td><td></td></tr>
      * <tr><td>dimensions</td><td>8</td><td></td></tr>
-     * <tr><td>direct</td><td>1</td><td>direct, barriers, chains</td></tr>
+     * <tr><td>direct</td><td>1</td><td></td></tr>
      * <tr><td>groups</td><td>20</td><td></td></tr>
      * <tr><td>none</td><td>0</td><td></td></tr>
      * <tr><td>standard</td><td>7</td><td></td></tr>
@@ -3286,14 +3286,15 @@ public final class R {
     public static final int email_string=0x7f0d0022;
     public static final int in=0x7f0d0023;
     public static final int last_sync=0x7f0d0024;
-    public static final int out=0x7f0d0025;
-    public static final int password=0x7f0d0026;
-    public static final int search_menu_title=0x7f0d0027;
-    public static final int server=0x7f0d0028;
-    public static final int spam=0x7f0d0029;
-    public static final int status_bar_notification_info_overflow=0x7f0d002a;
-    public static final int trash=0x7f0d002b;
-    public static final int wiki_string=0x7f0d002c;
+    public static final int mail_signature=0x7f0d0025;
+    public static final int out=0x7f0d0026;
+    public static final int password=0x7f0d0027;
+    public static final int search_menu_title=0x7f0d0028;
+    public static final int server=0x7f0d0029;
+    public static final int spam=0x7f0d002a;
+    public static final int status_bar_notification_info_overflow=0x7f0d002b;
+    public static final int trash=0x7f0d002c;
+    public static final int wiki_string=0x7f0d002d;
   }
   public static final class style {
     public static final int AlertDialog_AppCompat=0x7f0e0000;
@@ -7748,7 +7749,7 @@ public final class R {
      * <tr><td>barrier</td><td>2</td><td></td></tr>
      * <tr><td>chains</td><td>4</td><td></td></tr>
      * <tr><td>dimensions</td><td>8</td><td></td></tr>
-     * <tr><td>direct</td><td>1</td><td>direct, barriers, chains</td></tr>
+     * <tr><td>direct</td><td>1</td><td></td></tr>
      * <tr><td>groups</td><td>20</td><td></td></tr>
      * <tr><td>none</td><td>0</td><td></td></tr>
      * <tr><td>standard</td><td>7</td><td></td></tr>

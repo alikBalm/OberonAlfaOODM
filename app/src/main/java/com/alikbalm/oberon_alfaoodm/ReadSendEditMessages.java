@@ -228,12 +228,13 @@ public class ReadSendEditMessages extends AppCompatActivity {
 
         // и в дальнейшем какие нибудь вложения
         // также нужно разобраться как менять подпись если понадобится
-        String body = message_edit_text.getText().toString() + "\n\n" +
-                MainActivity.currentUser.mailSignature;
+        //String body = message_edit_text.getText().toString();
+
+        //message_edit_text.setText(body);
 
         String bodyHtml = Html.toHtml( message_edit_text.getText());
 
-        Log.i("!!! body + signarture", "sendMessageReplyOrForward() " + body);
+        //Log.i("!!! body + signarture", "sendMessageReplyOrForward() " + body);
 
         Call<ResponseBody> sendMessageNew = service.sendMessage(
                 MainActivity.currentUser.token,

@@ -1686,7 +1686,8 @@
         <item>Таблица</item>
         <item>Презентация</item>
         <item>txt</item>
-    </string-array></file><file path="/home/OBERON/alik.balm/AndroidStudioProjects/1/OberonAlfaOODM/app/src/main/res/values/styles.xml" qualifiers=""><style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    </string-array><string name="mail_signature">
+Message Send From Oberon-AlfaOODM Android App</string></file><file path="/home/OBERON/alik.balm/AndroidStudioProjects/1/OberonAlfaOODM/app/src/main/res/values/styles.xml" qualifiers=""><style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>

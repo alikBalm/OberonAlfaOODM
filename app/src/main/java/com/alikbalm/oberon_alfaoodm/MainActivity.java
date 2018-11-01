@@ -508,7 +508,7 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
                     JSONObject resp = new JSONObject(response.body().string());
                     JSONArray r = resp.getJSONArray("response");
                     if (r.length()<1) {
-                        currentUser = new LogedUsers(serverUrl, username, passwordText, token, "default.mail@default.default","");
+                        currentUser = new LogedUsers(serverUrl, username, passwordText, token, "default.mail@default.default",getString(R.string.mail_signature));
                         currentUser.save();
                     } else {
                         JSONObject account = r.getJSONObject(0);
@@ -517,7 +517,7 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
 
 
                         //JSONObject signature = account.getJSONObject("signature");
-                        userMailSignature = /*signature.getString("html");//*/"Message Send From \n   Oberon-AlfaOODM\n       Android App";
+                        userMailSignature = /*signature.getString("html") + */getString(R.string.mail_signature);
 
 
                         //! теперь у нас есть подпись для почты, для отправки писем, но естьнюанс

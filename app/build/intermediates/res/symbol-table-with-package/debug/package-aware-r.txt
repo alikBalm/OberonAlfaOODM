@@ -978,6 +978,7 @@ string edit
 string email_string
 string in
 string last_sync
+string mail_signature
 string out
 string password
 string search_menu_title

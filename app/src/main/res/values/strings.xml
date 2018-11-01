@@ -13,6 +13,8 @@
     <string name="trash">Корзина</string>
     <string name="spam">Спам</string>
     <string name="last_sync">Последняя синхронизация: </string>
+    <string name="mail_signature">
+Message Send From Oberon-AlfaOODM Android App</string>
 
     <string-array name="file_type_to_add">
         <item>Документ</item>
