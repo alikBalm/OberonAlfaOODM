@@ -6,14 +6,13 @@ public class LogedUsers extends SugarRecord{
 
     public LogedUsers(){}
 
-    String server, userName, password, token, email, mailSignature;
+    String server, userName, password, email, mailSignature;
 
-    public LogedUsers(String server, String userName, String password, String token, String email, String mailSignature){
+    public LogedUsers(String server, String userName, String password, String email, String mailSignature){
 
         this.server = server;
         this.userName = userName;
         this.password = password;
-        this.token = token;
         this.email = email;
         this.mailSignature = mailSignature;
     }

@@ -120,12 +120,6 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
             clearCreationEditTexts();
         } else if (getListIndex() == 0) {
 
-            //Log.i("111 List Index onBack" , String.valueOf(getListIndex()));
-
-            //service = null;
-            //retrofit = null;
-            //MainActivity.currentUser = null;
-            MainActivity.clearDBOnBackPressed();
             super.onBackPressed();
 
         } else {
@@ -181,7 +175,7 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_ooitem_list);//android.R.id.list
+        setContentView(R.layout.activity_ooitem_list);
 
         getSupportActionBar().hide();
 
@@ -522,7 +516,7 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
 
 
         // Выполняем запрос
-        Call<ResponseBody> uploadFile = service.uploadFile(MainActivity.currentUser.token,folderId,description,body);
+        Call<ResponseBody> uploadFile = service.uploadFile(MainActivity.tokenForThisSession,folderId,description,body);
         uploadFile.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, retrofit2.Response<ResponseBody> response) {
@@ -553,7 +547,7 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
 
         fileTitle = createTitle.getText().toString() + MainActivity.hardcoredListId.fileTypeForCreation.get(fileTypeFromSpinner);
 
-        Call<ResponseBody> createFile = service.createFile(MainActivity.currentUser.token,parenFolderId,typeInUrl,fileTitle,content);
+        Call<ResponseBody> createFile = service.createFile(MainActivity.tokenForThisSession,parenFolderId,typeInUrl,fileTitle,content);
 
         createFile.enqueue(new Callback<ResponseBody>() {
             @Override
@@ -577,7 +571,7 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
         Integer parenFolderId = screenId == MainActivity.hardcoredListId.getDocuments_mydoc() ? myDocumentsFolderId : screenId;
         String folderTitle = createTitle.getText().toString();
 
-        Call<ResponseBody> createFolder = service.createFolder(MainActivity.currentUser.token,parenFolderId,folderTitle);
+        Call<ResponseBody> createFolder = service.createFolder(MainActivity.tokenForThisSession,parenFolderId,folderTitle);
 
         createFolder.enqueue(new Callback<ResponseBody>() {
             @Override
@@ -610,7 +604,7 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
         }
         final Boolean finalEmptyMessageBD = emptyMessageBD;
 
-        Call<ResponseBody> getMailMessages = service.getMailMessages(MainActivity.currentUser.token,folderId,100);
+        Call<ResponseBody> getMailMessages = service.getMailMessages(MainActivity.tokenForThisSession,folderId,100);
 
         getMailMessages.enqueue(new Callback<ResponseBody>() {
             @Override
@@ -729,7 +723,7 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
         noFoldersInDocFoldersOnOO = false;
         noFilesInDocFoldersOnOO = false;
 
-        Call<ResponseBody> getFolderAndFiles = service.getDocFoldersAndFiles(MainActivity.currentUser.token,docFolderNameForHttpGET(id));
+        Call<ResponseBody> getFolderAndFiles = service.getDocFoldersAndFiles(MainActivity.tokenForThisSession,docFolderNameForHttpGET(id));
 
         getFolderAndFiles.enqueue(new Callback<ResponseBody>() {
             @Override
@@ -834,7 +828,7 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
         }
         final Boolean finalEmptyFolderBD = emptyFolderBD;
 
-        Call<ResponseBody> rootMailFolders = service.getRootMailFolders(MainActivity.currentUser.token);
+        Call<ResponseBody> rootMailFolders = service.getRootMailFolders(MainActivity.tokenForThisSession);
 
         rootMailFolders.enqueue(new Callback<ResponseBody>() {
             @Override
@@ -945,7 +939,7 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
     void moveMessageToTrashOrDelete(Integer messageId) {
 
         Call<ResponseBody> moveOrRemoveMessage = service.moveOrRemoveMessage(
-                MainActivity.currentUser.token,
+                MainActivity.tokenForThisSession,
                 getListIndex() != 4 ? "move" : "remove",
                 messageId,
                 getListIndex() != 4 ? 4 : null);
@@ -981,7 +975,7 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
         final List<WikiPages> wikiPagesList = WikiPages.listAll(WikiPages.class);
 
 
-        Call<ResponseBody> getRootWiki = service.getWikiPages(MainActivity.currentUser.token);
+        Call<ResponseBody> getRootWiki = service.getWikiPages(MainActivity.tokenForThisSession);
         getRootWiki.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -1022,7 +1016,7 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
     void getContactsList(){
         final List<ContactsOO> contactsOOList = ContactsOO.listAll(ContactsOO.class);
 
-        Call<ResponseBody> getContacts = service.getContactsOO(MainActivity.currentUser.token);
+        Call<ResponseBody> getContacts = service.getContactsOO(MainActivity.tokenForThisSession);
         getContacts.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {

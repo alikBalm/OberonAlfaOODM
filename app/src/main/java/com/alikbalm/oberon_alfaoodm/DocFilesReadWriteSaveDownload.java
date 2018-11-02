@@ -101,13 +101,22 @@ public class DocFilesReadWriteSaveDownload extends AppCompatActivity {
         contactId = getIntent().getStringExtra("contactId");
         if (webUrl != null) {
             Map<String, String> extraHeaders = new HashMap<String, String>();
-            extraHeaders.put("Authorization",MainActivity.currentUser.token );
+            extraHeaders.put("Authorization",MainActivity.tokenForThisSession );
 
             String url =
                     webUrl.contains(MainActivity.currentUser.server) ?
                             webUrl :
                             MainActivity.currentUser.server + webUrl ;
             docWebView.setVisibility(View.VISIBLE);
+
+            // две строчки ниже это настройки для открытие полной версии сайта, в нашем случае
+            // это нужно для редактирования файла
+            /*
+            String newUA= "Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.4) Gecko/20100101 Firefox/4.0";
+            docWebView.getSettings().setUserAgentString(newUA);
+            */
+            // конец настроек
+            // с этой настройкой он открывает полную версию но файл не редактирует, незнама почему разобраться в понедельник
 
             docWebView.loadUrl(url,extraHeaders);
         } else if (wikiPageName != null ){
@@ -131,7 +140,7 @@ public class DocFilesReadWriteSaveDownload extends AppCompatActivity {
 
     void getContactAvatar(String avatar){
         Log.i("!!! ", avatar);
-        Call<ResponseBody> getImage = service.getContactsAvatar(MainActivity.currentUser.token, avatar);
+        Call<ResponseBody> getImage = service.getContactsAvatar(MainActivity.tokenForThisSession, avatar);
 
         getImage.enqueue(new Callback<ResponseBody>() {
             @Override
@@ -214,7 +223,7 @@ public class DocFilesReadWriteSaveDownload extends AppCompatActivity {
 
 
         Call<ResponseBody> getWikiPageContent = service.getWikiPageContent(
-                MainActivity.currentUser.token,
+                MainActivity.tokenForThisSession,
                 name
         );
         getWikiPageContent.enqueue(new Callback<ResponseBody>() {

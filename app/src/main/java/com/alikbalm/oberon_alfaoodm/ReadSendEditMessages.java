@@ -181,7 +181,7 @@ public class ReadSendEditMessages extends AppCompatActivity {
     void readMessageOnClick(Integer messageId){
 
         Call<ResponseBody> readMessagebyId = service.readMessageById(
-                MainActivity.currentUser.token,messageId,true);
+                MainActivity.tokenForThisSession,messageId,true);
 
         readMessagebyId.enqueue(new Callback<ResponseBody>() {
             @Override
@@ -231,7 +231,7 @@ public class ReadSendEditMessages extends AppCompatActivity {
 
 
         Call<ResponseBody> sendMessageNew = service.sendMessage(
-                MainActivity.currentUser.token,
+                MainActivity.tokenForThisSession,
                 from_edit_text.getText().toString(),
                 to_edit_text.getText().toString(),
                 subject_edit_text.getText().toString(),
@@ -274,7 +274,7 @@ public class ReadSendEditMessages extends AppCompatActivity {
     void moveMessageToFolder(Integer messageId){
 
         Call<ResponseBody> moveOrRemoveMessage = service.moveOrRemoveMessage(
-                MainActivity.currentUser.token,
+                MainActivity.tokenForThisSession,
                 messageFolderId != 4 ? "move" : "remove",
                 messageId,
                 messageFolderId != 4 ? 4 : null);

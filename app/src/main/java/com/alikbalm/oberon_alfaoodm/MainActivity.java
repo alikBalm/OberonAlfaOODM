@@ -48,12 +48,12 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
 
     Button connect;
 
-    String serverUrl, username, passwordText, token, userEmail, userMailSignature;
+    String serverUrl, username, passwordText, /*token,*/ userEmail, userMailSignature;
 
     static LogedUsers currentUser;
+    static String tokenForThisSession;
 
     static ArrayList<Integer> listIdStack;
-    // здесь нужно добавить словарь с ключом айди экрана, и значением вермя последней синхронизации
     static HashMap<Integer,String> listIdDateStack;
 
     static Conf hardcoredListId;
@@ -64,26 +64,8 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
 
     Animation animation;
 
-
-    // задача послать get запрос https://office.oberon-alfa.ru/api/2.0/mail/messages/187419 тут id сообщения
-
     Retrofit retrofit;
     OnlyOfficeApi service;
-
-
-    /*@Override
-    protected void onResume() {
-
-        // тут пока так в дальнейшем нужно будет настроить метод log out
-        // для того чтоб можно было на одном устройстве входить на разные сервера
-        // и под разными логинами и паролями
-        // а пока здесь при нажатии назад из первоначального списка, он сразу выходит из приложения,
-        // и если пользователь залогинился то он не попадёт на начальный экран, потребуется переустановка
-        // приложения для этого но тогда обнулится вся бд
-        super.onBackPressed();
-        super.onResume();
-    }*/
-
 
     // метод прячащий клавиатуру
     public static void hideSoftKeyboard(Activity activity) {
@@ -102,48 +84,17 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
         getSupportActionBar().hide();
 
 
-
-
         server = (EditText) findViewById(R.id.server);
         e_mail = (EditText) findViewById(R.id.e_mail);
         password = (EditText) findViewById(R.id.password);
 
         connect = (Button) findViewById(R.id.connect);
-
-        hardcoredListId = new Conf();
-
-        //listIdStack = new ArrayList<>();
-
-        logedUsersList = LogedUsers.listAll(LogedUsers.class);
-
-        imageView = (ImageView) findViewById(R.id.imageView);
-        imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                hideSoftKeyboard(MainActivity.this);
-
-            }
-        });
-        syncImage = (ImageView) findViewById(R.id.syncImage);
-        syncImage.setVisibility(View.INVISIBLE);
-        animation = AnimationUtils.loadAnimation(getApplicationContext(),
-                R.anim.rotate);
-        animation.setAnimationListener(MainActivity.this);
-
-
         connect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //startConnectingAnimation();
 
-                /*if (currentUser != null) {
-                    if (listIdStack!=null) {
-                        currentUser = null;
-                    } else {
-                        goToRootListScreenIfCurrentUserNotNull();
-                    }*/
-
+                currentUser = null;
+                clearDBOnBackPressed();
 
                 startConnectingAnimation();
 
@@ -159,11 +110,6 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
                 username = e_mail.getText().toString();
                 passwordText = password.getText().toString();
 
-                Log.i("!!! Login Pressed", serverUrl);
-                Log.i("!!! Login Pressed", username);
-                Log.i("!!! Login Pressed", passwordText);
-
-
                 if (serverUrl.equals("https://")) {
 
                     Toast.makeText(MainActivity.this, "Server are required", Toast.LENGTH_SHORT).show();
@@ -175,21 +121,31 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
                     Toast.makeText(MainActivity.this, "Password are required", Toast.LENGTH_SHORT).show();
                     stopConnectingAnimation();
                 } else {
-
-
-                    // здесь меняем с volley на retrofit
-
-                    // два нижних метода нужно перенести в
-                    // метод checkForUserInLocalDB
-                    // или нет, нужно над логикой подумать
                     checkForUserInLocalDB(serverUrl, username, passwordText);
-
-
                 }
-
 
             }
         });
+
+        hardcoredListId = new Conf();
+
+        logedUsersList = LogedUsers.listAll(LogedUsers.class);
+
+        imageView = (ImageView) findViewById(R.id.imageView);
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                hideSoftKeyboard(MainActivity.this);
+
+            }
+        });
+
+        syncImage = (ImageView) findViewById(R.id.syncImage);
+        syncImage.setVisibility(View.INVISIBLE);
+        animation = AnimationUtils.loadAnimation(getApplicationContext(),
+                R.anim.rotate);
+        animation.setAnimationListener(MainActivity.this);
 
     }
 
@@ -252,7 +208,10 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
                                 public void onClick(DialogInterface dialogInterface, int i) {
                                     currentUser = serverAndUsernameCheckList.get(0);
 
-                                    goToRootListScreenIfCurrentUserNotNull();
+                                    //goToRootListScreenIfCurrentUserNotNull();
+
+                                    initializeApiService();
+                                    getTokenFromServer();
                                 }
                             })
                             .show();
@@ -261,60 +220,13 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
                     // здесь использование пользователя который в базе
                     currentUser = serverAndUsernameAndPasswordCheckList.get(0);
 
-                    goToRootListScreenIfCurrentUserNotNull();
+                    //goToRootListScreenIfCurrentUserNotNull();
+
+                    initializeApiService();
+                    getTokenFromServer();
                 }
             }
         }
-
-        // думаю нужны два временных массива с серверами и логинами из баз
-        /*List<LogedUsers> checkList = LogedUsers.listAll(LogedUsers.class);
-        for (final LogedUsers user :
-                checkList) {
-            if (user.server.equals(serverUrl)) {
-                if (user.userName.equals(username)) {
-                    if (user.password.equals(passwordText)){
-                        // если есть в базе такой пользователь то запоминаем его в кеше и переходим на корневой список
-                        currentUser = user;
-                        goToRootListScreenIfCurrentUserNotNull();
-
-                    } else {
-                        // здесь код если не совпадают пароли
-                        // нужно добавить алерт диалог с предупреждением что пароль в базе не совпадает с
-                        // введеным паролем, и вопрос изменить пароль в базе либо вы ошиблись при вводе?
-                        new AlertDialog.Builder(MainActivity.this)
-                                .setIcon(R.drawable.ic_launcher_background)
-                                .setTitle("?")
-                                .setMessage("Password for pair server-username in local DB does not match to entered one. Do you want to update it? \n" +
-                                        "If No, password from local DB will be used!")
-                                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialogInterface, int i) {
-                                        // здесь обновляем пароль для пользователя
-                                        // и следовательно нужно запросить новый токен, и возможно новый
-                                        // почтовый адресс так что лучше будет удалить пользователя из базы и
-                                        // посласть новый запрос
-                                        user.delete();
-
-                                        initializeApiService();
-
-                                        getTokenFromServer();
-                                    }
-                                })
-                                .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialogInterface, int i) {
-                                        currentUser = user;
-                                    }
-                                })
-                                .show();
-                    }
-                } else {
-                    // здесь код если в этом сервере не такого пользователя
-                }
-            } else {
-                // здесь код если нет такого сервера
-            }
-        }*/
     }
 
     public void showPopUpServer(View view) {
@@ -359,7 +271,7 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
 
         PopupMenu popup = new PopupMenu(this, view);
 
-        if (logedUsersList.size() < 1 || logedUsersList == null) {
+        if (logedUsersList == null || logedUsersList.size() < 1 ) {
 
             // ничего не делаем так как доставать не из чего
 
@@ -467,9 +379,9 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
 
                     JSONObject r = resp.getJSONObject("response");
 
-                    token = r.getString("token");
+                    tokenForThisSession = r.getString("token");
 
-                    getEmailByToken(token);
+                    getEmailByToken(tokenForThisSession);
 
                 } catch (JSONException e) {
 
@@ -512,8 +424,11 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
                     JSONObject resp = new JSONObject(response.body().string());
                     JSONArray r = resp.getJSONArray("response");
                     if (r.length()<1) {
-                        currentUser = new LogedUsers(serverUrl, username, passwordText, token, "default.mail@default.default",getString(R.string.mail_signature));
-                        currentUser.save();
+                        if (currentUser == null) {
+                            currentUser = new LogedUsers(serverUrl, username, passwordText,"default.mail@default.default",getString(R.string.mail_signature));
+                            currentUser.save();
+                        }
+
                     } else {
                         JSONObject account = r.getJSONObject(0);
                         userEmail = account.getString("email");
@@ -530,10 +445,12 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
                         // и уже при нажатии на один из них он записывался в базу
                         // также нужно добавить здесь на главном экране кнопку по смене почтвого ящика в локальной бд
 
-                        Log.i("!!! email", userEmail);
+                        //Log.i("!!! email", userEmail);
 
-                        currentUser = new LogedUsers(serverUrl, username, passwordText, token, userEmail, userMailSignature);
-                        currentUser.save();
+                        if (currentUser == null) {
+                            currentUser = new LogedUsers(serverUrl, username, passwordText, userEmail, userMailSignature);
+                            currentUser.save();
+                        }
 
                     }
 
@@ -623,23 +540,3 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
 
     }
 }
- /*
-
- мусор из xml
-
-     <ImageView
-        android:id="@+id/logedUsersPasswordImage"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:src="@drawable/loged_users"
-        android:layout_marginBottom="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:visibility="invisible"
-        android:onClick="showPopUpPassword"
-        app:layout_constraintBottom_toBottomOf="@id/password"
-        app:layout_constraintStart_toEndOf="@id/guiline_85_ver"
-        app:layout_constraintEnd_toEndOf="@id/password"
-        app:layout_constraintTop_toTopOf="@id/password"/>
-  */
