@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -40,6 +41,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class DocFilesReadWriteSaveDownload extends AppCompatActivity {
 
     WebView docWebView;
+    Button webViewFullModeButton;
+    Boolean mobileVersion;
 
     Retrofit retrofit;
     OnlyOfficeApi service;
@@ -89,6 +92,18 @@ public class DocFilesReadWriteSaveDownload extends AppCompatActivity {
 
 
         docWebView = (WebView) findViewById(R.id.docWebView);
+        webViewFullModeButton = (Button)findViewById(R.id.webViewFullModeButton);
+        // первоначальное значение, т.к. первая версия всегда должна быть мобильная
+        mobileVersion = true;
+
+        webViewFullModeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // меняем с мобильной версии и обратно
+                setDesktopMode(docWebView,mobileVersion);
+                mobileVersion = !mobileVersion ;
+            }
+        });
 
         getSupportActionBar().hide();
 
@@ -100,7 +115,7 @@ public class DocFilesReadWriteSaveDownload extends AppCompatActivity {
         wikiPageName = getIntent().getStringExtra("wikiPageName");
         contactId = getIntent().getStringExtra("contactId");
         if (webUrl != null) {
-            Map<String, String> extraHeaders = new HashMap<String, String>();
+            Map<String, String> extraHeaders = new HashMap<>();
             extraHeaders.put("Authorization",MainActivity.tokenForThisSession );
 
             String url =
@@ -108,22 +123,13 @@ public class DocFilesReadWriteSaveDownload extends AppCompatActivity {
                             webUrl :
                             MainActivity.currentUser.server + webUrl ;
             docWebView.setVisibility(View.VISIBLE);
-
-            // две строчки ниже это настройки для открытие полной версии сайта, в нашем случае
-            // это нужно для редактирования файла
-            /*
-            String newUA= "Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.4) Gecko/20100101 Firefox/4.0";
-            docWebView.getSettings().setUserAgentString(newUA);
-            */
-            // конец настроек
-            // с этой настройкой он открывает полную версию но файл не редактирует, незнама почему разобраться в понедельник
-
+            webViewFullModeButton.setVisibility(View.VISIBLE);
             docWebView.loadUrl(url,extraHeaders);
         } else if (wikiPageName != null ){
            openWikiPageContent(wikiPageName);
         } else if (contactId != null) {
 
-            //здесь нужно переделать так как открывается страничка в онлиофисе с боковой панелью
+            // здесь нужно переделать так как открывается страничка в онлиофисе с боковой панелью
             // а нам такая шняжкка не нужна
             // поэтому лучше будет скачивать фото профиля и подставлять значения в элементы parent1
 
@@ -252,5 +258,30 @@ public class DocFilesReadWriteSaveDownload extends AppCompatActivity {
             }
         });
 
+    }
+
+    // метод ниже нужен для того чтобы открывать странички документов в десктопной версии
+    // сайта, поскольку на нашем сервере стоит старый docEditor, и не даёт редактировать
+    // документы в мобилной версии, в принципе оно не шибко и удобно на мобильнике,
+    // в основном нунен просмотр, и в редких случаях редактирование
+    // думаю сегодняшние нужды по открытию документов приложение выполняет
+    public void setDesktopMode(WebView webView,boolean enabled) {
+        String newUserAgent = webView.getSettings().getUserAgentString();
+        if (enabled) {
+            try {
+                String ua = webView.getSettings().getUserAgentString();
+                String androidOSString = webView.getSettings().getUserAgentString().substring(ua.indexOf("("), ua.indexOf(")") + 1);
+                newUserAgent = webView.getSettings().getUserAgentString().replace(androidOSString, "(X11; Linux x86_64)");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            newUserAgent = null;
+        }
+
+        webView.getSettings().setUserAgentString(newUserAgent);
+        webView.getSettings().setUseWideViewPort(enabled);
+        webView.getSettings().setLoadWithOverviewMode(enabled);
+        webView.reload();
     }
 }

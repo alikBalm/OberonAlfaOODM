@@ -2,24 +2,32 @@
     <string name="app_name">Oberon-AlfaOODM</string>
     <string name="server">Server</string>
     <string name="e_mail">Username</string>
+    <string name="server_required">Server are required</string>
+    <string name="username_required">Username are required</string>
+    <string name="password_required">Password are required</string>
+    <string name="password_change_question">Password changed?</string>
+    <string name="positive_answer">Yes</string>
+    <string name="negative_answer">No</string>
+    <string name="log_in">log\nin</string>
+    <string name="password_change_question_text">Password for pair server-username in local DB does not match to entered one. Do you want to update it?     If No, password from local DB will be used!</string>
     <string name="password">Password</string>
-    <string name="documents_string">Документы</string>
-    <string name="email_string">Почта</string>
-    <string name="wiki_string">Википедия</string>
-    <string name="contacts_string">Люди</string>
-    <string name="in">Входящие</string>
-    <string name="out">Отправленные</string>
-    <string name="edit">Черновики</string>
-    <string name="trash">Корзина</string>
-    <string name="spam">Спам</string>
-    <string name="last_sync">Последняя синхронизация: </string>
+    <string name="documents_string">Documents</string>
+    <string name="email_string">Mail</string>
+    <string name="wiki_string">Wiki</string>
+    <string name="contacts_string">People</string>
+    <string name="in">Inbox</string>
+    <string name="out">Sent</string>
+    <string name="edit">Drafts</string>
+    <string name="trash">Trash</string>
+    <string name="spam">Spam</string>
+    <string name="last_sync">Last Sync: </string>
     <string name="mail_signature">
 Message Send From Oberon-AlfaOODM Android App</string>
 
     <string-array name="file_type_to_add">
-        <item>Документ</item>
-        <item>Таблица</item>
-        <item>Презентация</item>
+        <item>Document</item>
+        <item>Spreadsheet</item>
+        <item>Presentation</item>
         <item>txt</item>
     </string-array>
 

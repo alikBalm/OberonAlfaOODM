@@ -45,10 +45,11 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class MainActivity extends AppCompatActivity implements Animation.AnimationListener {
 
     EditText server, e_mail, password;
+    Boolean notUpdatePasswordOnQuestion;
 
     Button connect;
 
-    String serverUrl, username, passwordText, /*token,*/ userEmail, userMailSignature;
+    String serverUrl, username, passwordText, userEmail, userMailSignature;
 
     static LogedUsers currentUser;
     static String tokenForThisSession;
@@ -93,6 +94,7 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
             @Override
             public void onClick(View view) {
 
+                notUpdatePasswordOnQuestion = false;
                 currentUser = null;
                 clearDBOnBackPressed();
 
@@ -112,13 +114,13 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
 
                 if (serverUrl.equals("https://")) {
 
-                    Toast.makeText(MainActivity.this, "Server are required", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, R.string.server_required, Toast.LENGTH_SHORT).show();
                     stopConnectingAnimation();
                 } else if (username == null || username.equals("")) {
-                    Toast.makeText(MainActivity.this, "Username are required", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, R.string.username_required, Toast.LENGTH_SHORT).show();
                     stopConnectingAnimation();
                 } else if (passwordText == null || passwordText.equals("")) {
-                    Toast.makeText(MainActivity.this, "Password are required", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, R.string.password_required, Toast.LENGTH_SHORT).show();
                     stopConnectingAnimation();
                 } else {
                     checkForUserInLocalDB(serverUrl, username, passwordText);
@@ -149,7 +151,7 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
 
     }
 
-    void checkForUserInLocalDB(String serverUrl, String username, String passwordText) {
+    void checkForUserInLocalDB(String serverUrl, String username, final String passwordText) {
 
         // сначала проверяем есть ли такой сервер в лок бд
 
@@ -186,10 +188,9 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
 
                     new AlertDialog.Builder(MainActivity.this)
                             .setIcon(R.drawable.question)
-                            .setTitle("Password changed?")
-                            .setMessage("Password for pair server-username in local DB does not match to entered one. Do you want to update it? \n" +
-                                    "If No, password from local DB will be used!")
-                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            .setTitle(R.string.password_change_question)
+                            .setMessage(R.string.password_change_question_text)
+                            .setPositiveButton(R.string.positive_answer, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
                                     // здесь обновляем пароль для пользователя
@@ -197,19 +198,25 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
                                     // почтовый адресс так что лучше будет удалить пользователя из базы и
                                     // посласть новый запрос
                                     serverAndUsernameCheckList.get(0).delete();
+                                    notUpdatePasswordOnQuestion = false;
 
                                     initializeApiService();
 
                                     getTokenFromServer();
                                 }
                             })
-                            .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            .setNegativeButton(R.string.negative_answer, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
                                     currentUser = serverAndUsernameCheckList.get(0);
 
                                     //goToRootListScreenIfCurrentUserNotNull();
 
+                                    //Log.i("!!! No Нет", currentUser.server + "\n" + currentUser.userName + "\n" + currentUser.password);
+                                    notUpdatePasswordOnQuestion = true;
+
+
+                                    // строчки ниже расскоментировать после проверки отрицательного ответа
                                     initializeApiService();
                                     getTokenFromServer();
                                 }
@@ -368,7 +375,10 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
     // так как некоторые сервера (почти все ) выдают токен на очень короткий промежуток времени
     // и в результате токен не действителен
     void getTokenFromServer(){
-        Call<ResponseBody> getToken = service.getToken(username,passwordText);
+
+        Call<ResponseBody> getToken = notUpdatePasswordOnQuestion ?
+                service.getToken(username, currentUser.password) :
+                service.getToken(username, passwordText);
 
         getToken.enqueue(new Callback<ResponseBody>() {
             @Override

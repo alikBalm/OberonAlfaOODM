@@ -3184,9 +3184,10 @@ public final class R {
     public static final int ver_30=0x7f0800c9;
     public static final int ver_guid_90=0x7f0800ca;
     public static final int viewMessageLayout=0x7f0800cb;
-    public static final int withText=0x7f0800cc;
-    public static final int wrap=0x7f0800cd;
-    public static final int wrap_content=0x7f0800ce;
+    public static final int webViewFullModeButton=0x7f0800cc;
+    public static final int withText=0x7f0800cd;
+    public static final int wrap=0x7f0800ce;
+    public static final int wrap_content=0x7f0800cf;
   }
   public static final class integer {
     public static final int abc_config_activityDefaultDur=0x7f090000;
@@ -3286,15 +3287,23 @@ public final class R {
     public static final int email_string=0x7f0d0022;
     public static final int in=0x7f0d0023;
     public static final int last_sync=0x7f0d0024;
-    public static final int mail_signature=0x7f0d0025;
-    public static final int out=0x7f0d0026;
-    public static final int password=0x7f0d0027;
-    public static final int search_menu_title=0x7f0d0028;
-    public static final int server=0x7f0d0029;
-    public static final int spam=0x7f0d002a;
-    public static final int status_bar_notification_info_overflow=0x7f0d002b;
-    public static final int trash=0x7f0d002c;
-    public static final int wiki_string=0x7f0d002d;
+    public static final int log_in=0x7f0d0025;
+    public static final int mail_signature=0x7f0d0026;
+    public static final int negative_answer=0x7f0d0027;
+    public static final int out=0x7f0d0028;
+    public static final int password=0x7f0d0029;
+    public static final int password_change_question=0x7f0d002a;
+    public static final int password_change_question_text=0x7f0d002b;
+    public static final int password_required=0x7f0d002c;
+    public static final int positive_answer=0x7f0d002d;
+    public static final int search_menu_title=0x7f0d002e;
+    public static final int server=0x7f0d002f;
+    public static final int server_required=0x7f0d0030;
+    public static final int spam=0x7f0d0031;
+    public static final int status_bar_notification_info_overflow=0x7f0d0032;
+    public static final int trash=0x7f0d0033;
+    public static final int username_required=0x7f0d0034;
+    public static final int wiki_string=0x7f0d0035;
   }
   public static final class style {
     public static final int AlertDialog_AppCompat=0x7f0e0000;
