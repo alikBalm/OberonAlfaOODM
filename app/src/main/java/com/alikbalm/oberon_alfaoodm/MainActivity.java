@@ -499,6 +499,7 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
         DocumentsFiles.deleteAll(DocumentsFiles.class);
         WikiPages.deleteAll(WikiPages.class);
         ContactsOO.deleteAll(ContactsOO.class);
+        FolderDocOO.deleteAll(FolderDocOO.class);
         //listIdStack = null;
         //listIdDateStack = null;
 

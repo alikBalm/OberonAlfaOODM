@@ -9,9 +9,14 @@
     <string name="positive_answer">Yes</string>
     <string name="negative_answer">No</string>
     <string name="log_in">log\nin</string>
-    <string name="password_change_question_text">Password for pair server-username in local DB does not match to entered one. Do you want to update it?     If No, password from local DB will be used!</string>
+    <string name="password_change_question_text">Password for pair server-username in local DB does not match to entered one. Do you want to update it? If No, password from local DB will be used!</string>
     <string name="password">Password</string>
     <string name="documents_string">Documents</string>
+    <string name="my">My Documents</string>
+    <string name="share">Shared with Me</string>
+    <string name="common">Common Documents</string>
+    <string name="project">Project Documents</string>
+    <string name="recycle">Recycle Bin</string>
     <string name="email_string">Mail</string>
     <string name="wiki_string">Wiki</string>
     <string name="contacts_string">People</string>
@@ -20,6 +25,18 @@
     <string name="edit">Drafts</string>
     <string name="trash">Trash</string>
     <string name="spam">Spam</string>
+    <string name="are_you_sure">Are you sure?</string>
+    <string name="definitly_want">Do you definitly want to </string>
+    <string name="move_to_trash">move to Trash?</string>
+    <string name="delete">delete?</string>
+    <string name="title_required">Title required!</string>
+    <string name="folder">Folder</string>
+    <string name="document">Document</string>
+    <string name="file_upload_success">"File Upload Success"</string>
+    <string name="folder_create_success">Folder Create Success</string>
+    <string name="file_create_success">File Create Success</string>
+    <string name="synchronized_true"> Synchronized</string>
+    <string name="no_id_for_mail_folder">Folder has no Id</string>
     <string name="last_sync">Last Sync: </string>
     <string name="mail_signature">
 Message Send From Oberon-AlfaOODM Android App</string>

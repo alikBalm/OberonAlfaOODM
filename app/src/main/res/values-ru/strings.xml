@@ -1,0 +1,51 @@
+<resources>
+    <string name="app_name">Оберон-АльфаООДМ</string>
+    <string name="server">Сервер</string>
+    <string name="e_mail">Имя пользователя</string>
+    <string name="password">Пароль</string>
+    <string name="documents_string">Документы</string>
+    <string name="email_string">Почта</string>
+    <string name="wiki_string">Википедия</string>
+    <string name="contacts_string">Люди</string>
+    <string name="in">Входящие</string>
+    <string name="out">Отправленные</string>
+    <string name="edit">Черновики</string>
+    <string name="trash">Корзина</string>
+    <string name="spam">Спам</string>
+    <string name="last_sync">Последняя синхронизация: </string>
+    <string name="mail_signature">
+Письмо отправлено из мобильного приложения Оберон-АльфаООДМ</string>
+
+    <string-array name="file_type_to_add">
+        <item>Документ</item>
+        <item>Таблица</item>
+        <item>Презентация</item>
+        <item>txt</item>
+    </string-array>
+    <string name="server_required">Укажите сервер</string>
+    <string name="username_required">Укажите имя пользователя</string>
+    <string name="password_required">Укажите пароль</string>
+    <string name="password_change_question">Пароль Изменился?</string>
+    <string name="password_change_question_text">Пароль для этой пары сервер-имя пользователя в локальной БД не совпадает в введённым. Хотите обновить пароль? Если Нет, будет использован пароль из локальной БД!</string>
+    <string name="positive_answer">Да</string>
+    <string name="negative_answer">Нет</string>
+    <string name="log_in">авторизироваться</string>
+    <string name="my">Мои документы</string>
+    <string name="recycle">Корзина</string>
+    <string name="project">Документы проектов</string>
+    <string name="common">Общие документы</string>
+    <string name="share">Доступно для меня</string>
+    <string name="no_id_for_mail_folder">Папка не имеет идентификатора</string>
+    <string name="are_you_sure">Вы уверены?</string>
+    <string name="definitly_want">"Вы действительно хотите "</string>
+    <string name="move_to_trash">переместить в Корзину?</string>
+    <string name="delete">удалить</string>
+    <string name="title_required">Необходимо указать название!</string>
+    <string name="folder">Папка</string>
+    <string name="document">Документ</string>
+    <string name="file_upload_success">Загрузка файла завершена</string>
+    <string name="folder_create_success">Папка успешно создана</string>
+    <string name="file_create_success">Файл успешно создан</string>
+    <string name="synchronized_true">" Синхронизировано"</string>
+
+</resources>

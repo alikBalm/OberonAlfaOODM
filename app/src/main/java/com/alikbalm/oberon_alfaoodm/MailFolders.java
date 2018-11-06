@@ -10,35 +10,30 @@ public class MailFolders extends SugarRecord {
 
     String folderName;
 
-    public MailFolders(Integer folderId, Integer unreadCount, Integer totalCount) {
+    public MailFolders(Integer folderId, Integer unreadCount, Integer totalCount, String folderName) {
 
 
         this.folderId = folderId;
         this.unreadCount = unreadCount;
         this.totalCount = totalCount;
+        this.folderName = folderName;
         switch (folderId) {
-            case 1 : //ID #0x7f06005d
-                this.folderName = "Входящие";
+            case 1 :
                 this.pngId = R.drawable.in;
                 break;
             case 2:
-                this.folderName = "Отправленные";
                 this.pngId = R.drawable.out;
                 break;
             case 3:
-                this.folderName = "Черновики";
                 this.pngId = R.drawable.edit;
                 break;
             case 4:
-                this.folderName = "Корзина";
                 this.pngId = R.drawable.trash;
                 break;
             case 5:
-                this.folderName = "Спам";
                 this.pngId = R.drawable.spam;
                 break;
             default:
-                this.folderName = "Непонятки с id папки";
                 this.pngId = R.drawable.documents;
                 break;
         }

@@ -213,19 +213,16 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
                 String type = textViewForType.getText().toString();
                 String title = createTitle.getText().toString();
                 if (title.equals("")) {
-                    Toast.makeText(OOItemListActivity.this, "Title required!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(OOItemListActivity.this, getString(R.string.title_required), Toast.LENGTH_SHORT).show();
                 } else {
 
-                    /*
-
-                     */
-                    if (type.equals("Folder")) {
+                    if (type.equals(getString(R.string.folder))) {
 
                         createFolderInDocs(getListIndex());
                         clearCreationEditTexts();
                         createFileFolderDocs.setVisibility(View.INVISIBLE);
 
-                    } else if (type.equals("Document")) {
+                    } else if (type.equals(getString(R.string.document))) {
 
                         createFileInDocs(getListIndex());
                         clearCreationEditTexts();
@@ -315,47 +312,32 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
 
-                String selectedItemName = itemString.get(position);
-
-
-                // Давайка мы сделаем через id списка
-
                 if (getListIndex() == MainActivity.hardcoredListId.getRoot_screen()) {
-                    switch (selectedItemName) {
-                        case "Почта":
-                            MainActivity.listIdStack.add(MainActivity.hardcoredListId.getRoot_mail());
-                            initializeArraylistsForListView(getListIndex());
-                            //inititalizeMailFolders();
-                            break;
-                        case "Документы":
 
-                            // отрисовка списка папок и документов для документов
+                    String selectedItemName = itemString.get(position);
 
-                            MainActivity.listIdStack.add(MainActivity.hardcoredListId.getRoot_documents());
-                            //initializeDocumentFolders();
-                            initializeArraylistsForListView(getListIndex());
+                    String mail = getString(R.string.email_string),
+                            documents = getString(R.string.documents_string),
+                            wiki = getString(R.string.wiki_string),
+                            people = getString(R.string.contacts_string);
 
-                            break;
-                        case "Википедия":
+                    if (selectedItemName.equals(mail)) {
+                        MainActivity.listIdStack.add(MainActivity.hardcoredListId.getRoot_mail());
+                        initializeArraylistsForListView(getListIndex());
 
-                            // отрисовка списка википедии
-                            MainActivity.listIdStack.add(MainActivity.hardcoredListId.getRoot_wiki());
-                            initializeArraylistsForListView(getListIndex());
+                    } else if (selectedItemName.equals(documents)){
+                        MainActivity.listIdStack.add(MainActivity.hardcoredListId.getRoot_documents());
+                        initializeArraylistsForListView(getListIndex());
 
-                            break;
-                        case "Люди":
+                    } else if (selectedItemName.equals(wiki)){
+                        MainActivity.listIdStack.add(MainActivity.hardcoredListId.getRoot_wiki());
+                        initializeArraylistsForListView(getListIndex());
 
-                            // отрисовка списка контактов
-                            MainActivity.listIdStack.add(MainActivity.hardcoredListId.getRoot_contacts());
-                            initializeArraylistsForListView(getListIndex());
-                            /*
-                            addListIdAndPutSyncTime(9);
-                            initializeArraylistsForListView(getListIndex());
-                             */
-                            break;
-                        default:
-                            break;
+                    } else if (selectedItemName.equals(people)) {
+                        MainActivity.listIdStack.add(MainActivity.hardcoredListId.getRoot_contacts());
+                        initializeArraylistsForListView(getListIndex());
                     }
+
                 } else if (getListIndex() >= MainActivity.hardcoredListId.getMail_inbox() && getListIndex() <= MainActivity.hardcoredListId.getMail_spam()) {
                     // сообщения папок почты
                     // тут нужно проработать нажатие на одно из сообщений
@@ -364,54 +346,39 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
                     intent.putExtra("folderId", getListIndex());
                     startActivity(intent);
 
-
                 } else if (getListIndex() == MainActivity.hardcoredListId.getRoot_documents()) {
                     // папки документов
                     MainActivity.listIdStack.add(position+11);
                     initializeArraylistsForListView(getListIndex());
-
                 } else if (getListIndex() == MainActivity.hardcoredListId.getRoot_mail()) {
-                    // папки почты
-                    //Toast.makeText(OOItemListActivity.this, "Toast on " + selectedItemName, Toast.LENGTH_SHORT).show();
+                    // папки почты;
                     MainActivity.listIdStack.add(position + 1);
                     initializeArraylistsForListView(getListIndex());
-                    //getMessagesFromOOByListId(getListIndex());
                 } else if (getListIndex() == MainActivity.hardcoredListId.getRoot_wiki()) {
                     // странчки вики
-
                     openWikiPageFromList(itemString.get(position));
-
                 } else if (getListIndex() == MainActivity.hardcoredListId.getRoot_contacts()) {
                     // странчки контактов
-
                     openContactUrl(itemStringId.get(position));
-
-
-                }  else if (getListIndex() >= MainActivity.hardcoredListId.getDocuments_mydoc() && getListIndex() <= MainActivity.hardcoredListId.getDocuments_trash()) {
+                } else if (getListIndex() >= MainActivity.hardcoredListId.getDocuments_mydoc() && getListIndex() <= MainActivity.hardcoredListId.getDocuments_trash()) {
                     // хождение по папкам документов и открытие файлов
-
                     if (itemTypeFolder.get(position)) {
                         MainActivity.listIdStack.add(itemId.get(position));
                         initializeArraylistsForListView(getListIndex());
                     } else {
-
                         // открываем сами файлы, если не можем скачиваем, напримен файл с расширением .bin или .exe
                         openDocumentFromList(position);
-
                     }
                 } else {
                     // это для папок внутри папок внутри папок в документах  ))))
 
                     if (itemTypeFolder.get(position)) {
-
                         // здесь открытие папки
-
                         MainActivity.listIdStack.add(itemId.get(position));
                         initializeArraylistsForListView(getListIndex());
                     } else {
                         // здесь открытие документа
                         openDocumentFromList(position);
-
                     }
                 }
 
@@ -426,19 +393,19 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
                         getListIndex() <= MainActivity.hardcoredListId.getMail_spam()) {
                     // сначала сделать AlertDialog
                     // затем указать в нём метод удаления письма используя messageId(position)
-                    String folderName = getListIndex() != 4 ? "move to Trash" : "Delete";
+                    String folderName = getListIndex() != 4 ? getString(R.string.move_to_trash) : getString(R.string.delete);
 
                     new AlertDialog.Builder(OOItemListActivity.this)
-                            .setTitle("Are you sure?")
-                            .setMessage("Do you definitly want to " + folderName + " ?")
-                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            .setTitle(getString(R.string.are_you_sure))
+                            .setMessage(getString(R.string.definitly_want) + folderName )
+                            .setPositiveButton(getString(R.string.positive_answer), new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
                                     //Toast.makeText(OOItemListActivity.this, "Yes button pressed", Toast.LENGTH_SHORT).show();
                                     moveMessageToTrashOrDelete(itemId.get(position));
                                 }
                             })
-                            .setNegativeButton("No", null)
+                            .setNegativeButton(R.string.negative_answer, null)
                             .show();
                 }
 
@@ -522,7 +489,7 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
             public void onResponse(Call<ResponseBody> call, retrofit2.Response<ResponseBody> response) {
                 // возвращаем цвет картинки загрузки файла
                 uploadFileImage.setImageResource(R.drawable.upload_file);
-                Toast.makeText(OOItemListActivity.this, "File Upload Success", Toast.LENGTH_SHORT).show();
+                Toast.makeText(OOItemListActivity.this, getString(R.string.file_upload_success), Toast.LENGTH_SHORT).show();
                 syncScreenWithOO();
             }
             @Override
@@ -552,7 +519,7 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
         createFile.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, retrofit2.Response<ResponseBody> response) {
-                Toast.makeText(OOItemListActivity.this, "File Create Success", Toast.LENGTH_SHORT).show();
+                Toast.makeText(OOItemListActivity.this, getString(R.string.file_create_success), Toast.LENGTH_SHORT).show();
                 syncScreenWithOO();
             }
             @Override
@@ -576,7 +543,7 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
         createFolder.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, retrofit2.Response<ResponseBody> response) {
-                Toast.makeText(OOItemListActivity.this, "Folder Create Success", Toast.LENGTH_SHORT).show();
+                Toast.makeText(OOItemListActivity.this, getString(R.string.folder_create_success), Toast.LENGTH_SHORT).show();
                 syncScreenWithOO();
             }
 
@@ -633,7 +600,7 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
                     }
 
                     List<MailFolders> findNameByFolderId = Select.from(MailFolders.class).where(Condition.prop("folder_id").eq(folderId)).list();
-                    Toast.makeText(OOItemListActivity.this, findNameByFolderId.get(0).folderName + " Synchronized", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(OOItemListActivity.this, findNameByFolderId.get(0).folderName + getString(R.string.synchronized_true), Toast.LENGTH_SHORT).show();
                     // ниже проверка записалось ли что нибудь в лок бд
                     List<MailMessage> messagesCheckList = Select.from(MailMessage.class).where(Condition.prop("folder_id").eq(folderId)).list();
                     if (messagesCheckList==null || messagesCheckList.size() < 1) {
@@ -800,7 +767,7 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
     // думаю нужно переходить на новую активность чтоб в дальнейшем уже добавить функцию отправки
     // ответа и т.д. как в полноценном почтовом агенте
 
-    void inititalizeMailFolders() {
+    void initializeMailFolders() {
 
         //MailFolders.deleteAll(MailFolders.class);
 
@@ -832,7 +799,7 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
 
         rootMailFolders.enqueue(new Callback<ResponseBody>() {
             @Override
-            public void onResponse(Call<ResponseBody> call, retrofit2.Response<ResponseBody> response) {
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
 
                 try {
                     JSONObject resp = new JSONObject(response.body().string());
@@ -847,7 +814,14 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
                         Integer total_count = (Integer) folderObject.getInt("total_count");
 
                         if (finalEmptyFolderBD) {
-                            new MailFolders(id, unread_messages, total_count).save();
+                            String folderName =
+                                    id == 1 ? getString(R.string.in) :
+                                    id == 2 ? getString(R.string.out) :
+                                    id == 3 ? getString(R.string.edit) :
+                                    id == 4 ? getString(R.string.trash) :
+                                    id == 5 ? getString(R.string.spam) :
+                                    getString(R.string.no_id_for_mail_folder);
+                            new MailFolders(id, unread_messages, total_count,folderName).save();
                         } else {
                             List<MailFolders> folderToUpdate = Select.from(MailFolders.class).where(Condition.prop("folder_id").eq(id)).list();
                             folderToUpdate.get(0).unreadCount = unread_messages;
@@ -887,11 +861,11 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
         try {
             List<FolderDocOO> docFoldersToUpdate = Select.from(FolderDocOO.class).list();
             if (docFoldersToUpdate == null || docFoldersToUpdate.size() < 5) {
-                new FolderDocOO("my").save();
-                new FolderDocOO("share").save();
-                new FolderDocOO("common").save();
-                new FolderDocOO("projects").save();
-                new FolderDocOO("trash").save();
+                new FolderDocOO(getString(R.string.my)).save();
+                new FolderDocOO(getString(R.string.share)).save();
+                new FolderDocOO(getString(R.string.common)).save();
+                new FolderDocOO(getString(R.string.project)).save();
+                new FolderDocOO(getString(R.string.recycle)).save();
 
                 initializeArraylistsForListView(getListIndex());
             }
@@ -903,11 +877,11 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
         } catch (SQLiteException e) {
             Log.i("SQLLITE NO SUCH TABLE", e.getMessage());
 
-            new FolderDocOO("my").save();
-            new FolderDocOO("share").save();
-            new FolderDocOO("common").save();
-            new FolderDocOO("projects").save();
-            new FolderDocOO("trash").save();
+            new FolderDocOO(getString(R.string.my)).save();
+            new FolderDocOO(getString(R.string.share)).save();
+            new FolderDocOO(getString(R.string.common)).save();
+            new FolderDocOO(getString(R.string.project)).save();
+            new FolderDocOO(getString(R.string.recycle)).save();
 
             initializeArraylistsForListView(getListIndex());
         }
@@ -1079,7 +1053,6 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
 
             initializeArraysForRootScreen();
 
-
         } else if (indexofList == MainActivity.hardcoredListId.getRoot_mail()) {
 
             initializeRootMailScreen();
@@ -1194,7 +1167,7 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
             GetFolderFoldersAndFilesByListId(getListIndex());
         } else if (getListIndex() == MainActivity.hardcoredListId.getRoot_mail()) {
             // почта
-            inititalizeMailFolders();
+            initializeMailFolders();
         } else if (getListIndex() == MainActivity.hardcoredListId.getRoot_wiki()) {
             // википедия
             getWikiPagesList();
@@ -1251,20 +1224,15 @@ public class OOItemListActivity extends AppCompatActivity implements AdapterView
 
         List<MailFolders> foldersToList = Select.from(MailFolders.class).orderBy("folder_id").list();
         if (foldersToList == null || foldersToList.size() < 1 ){
-
             syncScreenWithOO();
-            //inititalizeMailFolders();
         } else {
             for (MailFolders folder :
                     foldersToList) {
-
                 // чтоб писать количество писем прочитанных и непрочитанных нужно добавить в список ещё одно поле, потому как не получается искать по Входящие
                 // это в дальнейшем переделаем а пока
                 itemString.add(folder.folderName + " " + folder.unreadCount + "/" + folder.totalCount);
-
                 //itemString.add(folder.folderName);
                 itemPng.add(folder.pngId);
-
                 //String s = folder.folderName + " " + folder.unreadCount + "/" + folder.totalCount;
                 //int pngInt = folder.pngId;
             }
